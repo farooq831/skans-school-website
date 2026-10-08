@@ -1,0 +1,10 @@
+<?php
+// campus-data/sites.php : which website address shows which campus.
+// Copy this file to the SERVER as  campus-data/sites.php  and change the addresses.
+// Write each address exactly as visitors type it, in lowercase, without "https://" and without a "/" at the end.
+// List the "www." form too if it is used.
+return [
+    'aechscampus.skansschool.edu.pk'     => 'aechs',   // the real website address
+    'www.aechscampus.skansschool.edu.pk' => 'aechs',
+    'new-aechs.skansschool.edu.pk'       => 'aechs',   // test subdomain (remove after going live)
+];

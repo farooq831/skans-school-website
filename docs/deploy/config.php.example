@@ -1,0 +1,46 @@
+<?php
+// campus-data/aechs/config.php : settings of ONE campus. Copy to the SERVER and fill in.
+// NEVER put this file in a zip, an email or a chat: it holds passwords.
+return [
+    // Database of this campus: cPanel -> "MySQL Databases" (on cPanel the names start with the account name, e.g. youraccount_...).
+    'db' => [
+        'host' => 'localhost',               // almost always localhost on cPanel
+        'name' => 'CPANELUSER_dbname',       // database name
+        'user' => 'CPANELUSER_dbuser',       // database user (must be "added to the database" with ALL PRIVILEGES)
+        'pass' => 'database-user-password',
+    ],
+
+    // Pictures folder, relative to the website folder. The AECHS pictures stay where they always were:
+    'uploads' => 'adminpanel/upload/images',
+
+    // Email login for the admin "forgot password" email (cPanel -> Email Accounts).
+    'mail' => [
+        'host'      => 'skansschool.edu.pk', // or mail.skansschool.edu.pk (cPanel -> Email Accounts -> Connect Devices)
+        'port'      => 587,
+        'user'      => 'noreply@skansschool.edu.pk',
+        'pass'      => 'email-password',
+        'from'      => 'noreply@skansschool.edu.pk',
+        'from_name' => 'SKANS',
+        'copy_to'   => '',                   // optional: also send a copy to this address
+    ],
+
+    // This campus's details shown on the website. The admin panel (Settings) can change them later.
+    'site' => [
+        'name'      => 'SKANS School System',
+        'campus'    => 'AECHS Campus',
+        'full_name' => 'SKANS School System, AECHS Campus',
+        'city'      => 'Rawalpindi',
+        'classes'   => 'Playgroup – Matric',
+        'tagline'   => 'Education for life',
+        'address'   => '337 Street 17, Sector 1, Airport Employees CHS, Rawalpindi, Punjab 46000',
+        'map_url'   => 'https://maps.app.goo.gl/xgLhyvi7ufDhE6yb7',
+        'email'     => 'aechs.campus@skansschool.edu.pk',
+        'phones'    => [
+            ['label' => 'Office',            'display' => '+92 51 8468475',  'tel' => '+92518468475'],
+            ['label' => 'Mobile / WhatsApp', 'display' => '+92 333 5352965', 'tel' => '+923335352965'],
+        ],
+        'whatsapp'  => '923335352965',
+        'facebook'  => 'https://www.facebook.com/p/SKANS-School-System-AECHS-Rawalpindi-100076253467677/',
+        'instagram' => 'https://www.instagram.com/skans_school_aechs',
+    ],
+];

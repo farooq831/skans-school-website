@@ -1,0 +1,67 @@
+MOVING ANY CAMPUS (AECHS, PWD, ...) TO THE NEW WEBSITE - STEP BY STEP
+=====================================================================
+Replace <campus> with a short lowercase name, e.g. aechs, pwd. Use the SAME name everywhere.
+
+A. PREPARE (before touching the server)
+  1. Get: cPanel access, the campus website folder, its web address, its database name/user/password,
+     the noreply@ email password.
+  2. Collect the campus's own details: campus name, city, address, Google Maps link, email,
+     office phone, mobile/WhatsApp, Facebook/Instagram links, fees, principal's message + photo.
+
+B. BACKUP (never skip)
+  3. File Manager > campus folder > Compress > download the zip.
+  4. phpMyAdmin > campus database > Export > Quick > SQL > Go > save.
+
+C. FILES
+  5. Rename the old folder (e.g. pwd-old-2026-10). Make a new folder with the old name.
+  6. Upload the website zip into it > Extract > delete the zip.
+  7. Copy from the OLD folder into the NEW one:
+       adminpanel/upload/images/   (pictures)        uploads/   (student photos)
+       .well-known/  and any google....html / robots.txt in the root (if they exist)
+
+D. CONFIG (2 files, created on the server only; never zip or share them)
+  8. campus-data/sites.php  -> the address(es) of THIS campus:
+         <?php
+         return [
+             'pwdcampus.skansschool.edu.pk'     => 'pwd',
+             'www.pwdcampus.skansschool.edu.pk' => 'pwd',
+         ];
+  9. Folder campus-data/<campus>/  and in it  config.php  (copy 3-server-config/campus-data/aechs/config.php):
+       - FIRST LINE MUST BE  <?php   (nothing above it)
+       - 'db'   : THIS campus's database name, user, password
+       - 'site' : THIS campus's name, city, address, phones, email, links  (not AECHS!)
+       - 'mail' : the noreply@ email password
+ 10. Check in the browser:  https://<address>/campus-data/<campus>/config.php  -> must say 403 Forbidden.
+
+E. DATABASE (phpMyAdmin > THIS campus's database > SQL)
+ 11. 01-check-before.sql   (look, screenshot)
+ 12. 02-schema.sql         (required; "#1060 Duplicate column" = already there, fine)
+ 13. 03-settings.sql       ONLY for AECHS. Other campuses: SKIP (it holds the AECHS address/phones).
+ 14. 06-check-after.sql    (row counts same as step 11)
+     08-academic-levels.sql (puts the current level-card text into Academic Programs #1-#3, then
+                             edit them in Admin > Academic Programs; skip if #1-#3 were already rewritten)
+     cPanel > MySQL Databases: the user must be added to THIS database with ALL PRIVILEGES.
+
+F. OPEN THE SITE AND THE ADMIN PANEL (/adminpanel, same login as before)
+ 15. Admin > Settings > School & contact details : check every field is THIS campus. Save.
+ 16. Admin > Settings > Fee structure            : enter THIS campus's fees and session. Save.
+ 17. Admin > Settings > Admission policy         : check. Save if changed.
+ 18. Admin > Settings > Principal's message      : THIS campus's text, name and photo. Save.
+ 19. Admin > Backups > Back up now.
+
+G. TEST (phone + computer), then tell your sir
+ 20. Every page opens; pictures show; contact form arrives in admin; "Forgot password" email arrives.
+
+H. AFTER
+ 21. cPanel > Cron Jobs > Once per day:
+       /usr/local/bin/php /home/CPANELUSER/public_html/<folder>/adminpanel/cron_backup.php --campus=<campus>
+ 22. Change passwords that were ever shown or shared (MySQL user, email).
+ 23. Keep the old folder 2-4 weeks, then delete it.
+
+IF THE PAGE SAYS ...
+  "This website address is not set up."  -> the address is not in campus-data/sites.php, or
+                                             campus-data/<campus>/config.php is missing / misnamed.
+  "Setup needed: ... must start with <?php" -> add <?php as the first line of sites.php / config.php.
+  "The website is temporarily unavailable." -> wrong database name/user/password in config.php,
+                                             or the user is not added to the database.
+  The exact reason is written in the "error_log" file in the website folder (cPanel > File Manager).

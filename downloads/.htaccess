@@ -1,0 +1,3 @@
+# Admission form files are kept but not offered online for now (decision 3 Oct 2026).
+# To offer them again: delete this file and set forms_public => true in data/fees.php.
+Require all denied

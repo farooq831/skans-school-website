@@ -1,0 +1,3 @@
+# campus-data/ : campus settings, database logins and backups. Never served to the web.
+# Only each campus's uploads/ folder is opened again (see uploads/.htaccess).
+Require all denied

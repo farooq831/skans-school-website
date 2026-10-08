@@ -1,0 +1,35 @@
+# ---------------------------------------------------------------
+# NEVER on GitHub: passwords, database backups, people's photos.
+# ---------------------------------------------------------------
+
+# Each campus's database + email password (templates are in docs/deploy/)
+campus-data/*/config.php
+campus-data/*/backups/
+campus-data/*/uploads/
+
+# Database backups (contain contact messages, admissions, logins)
+backups/
+*.sql.gz
+
+# Pictures uploaded in the admin panel (news, faculty, students: 160 MB) and student photos
+adminpanel/upload/
+uploads/*
+!uploads/.htaccess
+
+# Built release zips / packages (made with docs/build-release.ps1)
+_release/
+
+# Old versions and editor backup copies
+_old/
+*.bak
+*.orig
+
+# Server / local files
+.well-known/
+error_log
+*.log
+zz_*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
