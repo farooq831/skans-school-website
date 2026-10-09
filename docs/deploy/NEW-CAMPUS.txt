@@ -1,0 +1,32 @@
+MOVING A CAMPUS TO THE NEW WEBSITE WITH THE PREPARATION TOOL
+=============================================================
+
+1. BACKUP (cPanel)
+   File Manager > public_html > right-click the campus folder > Compress > Zip > Download.
+   phpMyAdmin > the campus database > Export > Quick > SQL > Go.  Keep both on the laptop.
+
+2. GIVE THE BACKUP TO THE TOOL (laptop)
+   Put the zip in  _release\incoming\   e.g.  _release\incoming\gulraiz.zip
+   Note: campus id (short, lowercase, e.g. gulraiz), web address, campus name, classes line.
+
+3. MAKE THE READY ZIP
+   python docs\prepare-campus.py --backup _release\incoming\gulraiz.zip --campus gulraiz ^
+          --domain gulraizcampus.skansschool.edu.pk --name "Gulraiz Campus" --classes "Playgroup – Class 8"
+   Result:  _release\gulraiz\gulraiz-ready.zip   and   _release\gulraiz\REPORT.txt
+   Read REPORT.txt: every picture used, details found, and lines starting with "!!" to fix by hand
+   (in _release\gulraiz\work\site\..., then run the tool's zip step again or re-zip that folder).
+
+4. UPLOAD (cPanel > File Manager, Show Hidden Files ON)
+   Campus folder > Select All > untick .well-known > Delete (to Trash).
+   Upload gulraiz-ready.zip > Extract > check index.php is directly in the folder > delete the zip.
+
+5. DATABASE (phpMyAdmin > the campus database > SQL)
+   Only docs\sql\go-live\02-schema.sql (+ the activities created_at check).  NOT 03 or 08.
+
+6. TEST + ADMIN
+   Website pages, campus-data/<id>/config.php must give 403, admin login.
+   Admin > Settings: School & contact, Classes & ages, Fee structure, Admission policy,
+   Principal's message (real photo), Academic Programs #1-#3 lines/pictures, Backups > Back up now.
+
+The tool already applies the Chakri choices for every new campus (config 'features'):
+no class/age list and no FBISE line on the level cards, no Academic Programs in the admin menu/dashboard.

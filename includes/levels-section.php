@@ -21,12 +21,14 @@
                 <div class="sk-card__body">
                     <h3 class="sk-card__title"><?= e($level['name']) ?></h3>
                     <p class="sk-level__range"><?= e($level['range']) ?></p>
+<?php if (campus_feature('level_classes')): // config 'features' => ['level_classes' => false] hides it ?>
                     <ul class="sk-level__classes" aria-label="Classes">
 <?php foreach ($level['classes'] as [$class, $age]): ?>
                         <li><?= e($class) ?> <span>· <?= e($age) ?></span></li>
 <?php endforeach; ?>
                     </ul>
-<?php if (isset($level['board'])): ?>
+<?php endif; ?>
+<?php if (isset($level['board']) && campus_feature('level_board')): ?>
                     <p class="sk-card__meta">Examination board: <?= content($level['board'], 'board name') ?></p>
 <?php endif; ?>
                     <h4>Key objectives</h4>

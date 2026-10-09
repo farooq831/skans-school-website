@@ -33,3 +33,6 @@ zz_*
 Thumbs.db
 .vscode/
 .idea/
+
+# Python cache
+__pycache__/

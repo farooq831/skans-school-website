@@ -99,6 +99,20 @@ function campus_config(): array
     return $GLOBALS['sk_campus']['config'];
 }
 
+/**
+ * Per-campus on/off switches, set in campus-data/<campus>/config.php under 'features'.
+ * Anything not set is ON (the AECHS default), e.g.
+ *   'features' => ['level_classes' => false, 'level_board' => false, 'academic_programs_admin' => false],
+ *   level_classes            class + age list on the 3 level cards
+ *   level_board              "Examination board: FBISE" line on the Seniors card
+ *   academic_programs_admin  Academic Programs in the admin menu and dashboard
+ */
+function campus_feature(string $name): bool
+{
+    $features = campus_config()['features'] ?? [];
+    return !array_key_exists($name, $features) || (bool) $features[$name];
+}
+
 /** New database connection for this campus (or a mysqli with connect_error set). */
 function campus_connect(): mysqli
 {

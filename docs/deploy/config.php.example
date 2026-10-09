@@ -24,6 +24,13 @@ return [
         'copy_to'   => '',                   // optional: also send a copy to this address
     ],
 
+    // On/off switches for this campus (anything left out stays ON).
+    'features' => [
+        'level_classes'           => false,   // class + age list on the 3 level cards
+        'level_board'             => false,   // "Examination board: FBISE" on the Seniors card
+        'academic_programs_admin' => false,   // Academic Programs in the admin menu and dashboard
+    ],
+
     // This campus's details shown on the website. The admin panel (Settings) can change them later.
     'site' => [
         'name'      => 'SKANS School System',

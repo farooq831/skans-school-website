@@ -51,7 +51,9 @@ $adm_pending = adm_pending_messages();
             <li class="nav-item"><a class="nav-link<?= $adm_active('facilities.php') ?>" href="facilities.php"><i class="fas fa-school"></i> Facilities Page</a></li>
             <li class="nav-item"><a class="nav-link<?= $adm_active('events.php') ?>" href="events.php"><i class="fas fa-newspaper"></i> News &amp; Events Page</a></li>
             <li class="nav-item"><a class="nav-link<?= $adm_active('staff.php') ?>" href="staff.php"><i class="fas fa-chalkboard-user"></i> Faculty Page</a></li>
+<?php if (campus_feature('academic_programs_admin')): ?>
             <li class="nav-item"><a class="nav-link<?= $adm_active('academic_programs.php') ?>" href="academic_programs.php"><i class="fas fa-graduation-cap"></i> Academic Programs</a></li>
+<?php endif; ?>
             <li class="nav-item">
                 <a class="nav-link adm-msg<?= in_array($adm_here, ['view_contactus.php'], true) ? ' active' : '' ?>" href="view_contactus.php"
                    title="<?= $adm_pending ? $adm_pending . ' message' . ($adm_pending === 1 ? '' : 's') . ' waiting for a reply' : 'No new messages' ?>">

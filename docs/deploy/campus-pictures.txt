@@ -1,0 +1,30 @@
+PICTURES AND VIDEO EACH CAMPUS PROVIDES (the "clean" zip has none of these)
+=========================================================================
+Put the campus's own files in these folders WITH EXACTLY THESE NAMES (lowercase, same ending).
+A missing file shows as an empty/broken picture on that page. Keep each picture under 2 MB.
+
+FOLDER assets/video/
+  hero.mp4                 Home page video (MP4, ideally under 10 MB, plays muted on a loop)
+                           OLD SITE: video/vid.mp4
+  hero-poster.jpg          Picture shown before the video plays / on phones (a frame of the video)
+                           OLD SITE: video/firstpage.jpg
+
+FOLDER assets/img/
+  about-principal.jpg      Principal's photo on the About page (portrait). Can also be uploaded later in
+                           Admin > Settings > Principal's message (that one wins).
+  about-campus-1.jpg       About page, big photo: the campus building (landscape, wide)
+  about-campus-2.jpg       About page, small photo 1: e.g. a classroom (landscape)
+  about-campus-3.jpg       About page, small photo 2: e.g. playground / park (landscape)
+                           OLD SITE: the photos on the old about.php (look for <img src="..."> in it)
+  facilities-hero.jpg      Top of the Facilities page (portrait, taller than wide)
+  special-programs.jpeg    Special Programs page photo (landscape)
+                           OLD SITE: the <img> on the old advanced-placement-program.php
+  level-early-years.jpeg   Level card pictures. Only shown if Admin > Academic Programs #1-#3 have no
+  level-juniors.jpeg       picture of their own (they usually do: the old site's program pictures stay
+  level-seniors.jpeg       in adminpanel/upload/images/). Use any good class photo if unsure.
+
+FOLDER downloads/  (optional; the folder is closed to the web while admission forms are hidden)
+  the campus's admission form PDF / Word, if it will be offered again later
+
+NOT NEEDED: SKANS logo, favicon, facility icons, banner patterns, harassment-policy PDF: same for all campuses,
+already in the zip.

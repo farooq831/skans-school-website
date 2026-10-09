@@ -123,7 +123,9 @@ $pct = min(100, (int) round($q['used'] / max(1, $q['limit']) * 100));
         <div class="adm-tiles">
             <a href="facilities.php" class="btn btn-success btn-large"><span><i class="fas fa-school d-block mb-2"></i>Facilities</span></a>
             <a href="events.php" class="btn btn-success btn-large"><span><i class="fas fa-newspaper d-block mb-2"></i>News and Events</span></a>
+<?php if (campus_feature('academic_programs_admin')): ?>
             <a href="academic_programs.php" class="btn btn-success btn-large"><span><i class="fas fa-graduation-cap d-block mb-2"></i>Academic Programs</span></a>
+<?php endif; ?>
             <a href="staff.php" class="btn btn-success btn-large"><span><i class="fas fa-chalkboard-user d-block mb-2"></i>Faculty</span></a>
             <a href="admission_page.php" class="btn btn-success btn-large"><span><i class="fas fa-envelope-open-text d-block mb-2"></i>Admissions &amp; Contact Us</span></a>
             <a href="fees_edit.php" class="btn btn-success btn-large"><span><i class="fas fa-money-bill-wave d-block mb-2"></i>Fee Structure</span></a>
