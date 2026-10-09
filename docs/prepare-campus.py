@@ -235,9 +235,12 @@ def find_details(old: Path):
     ig = next((l for l in links if 'instagram.com' in l), '')
     maps = next((l for l in links if re.search(r'maps\.app\.goo\.gl|google\.[a-z.]+/maps|goo\.gl/maps|share\.google', l)), '')
     addr = ''
-    m = re.search(r'(?is)Visit\s*Us\s*</h\d>.{0,300}?<(?:p|address)[^>]*>(.{6,400}?)</(?:p|address)>', text)
-    if m:
-        addr = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', m.group(1)))).strip(' ,')
+    m = re.search(r'(?is)Visit\s*Us\s*</h\d>(.{0,1500}?)(?:</a>|View\s*On\s*Map)', text)
+    if m:                                  # all lines of the "Visit Us" block except a bare school name
+        lines = [re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', x))).strip(' ,')
+                 for x in re.findall(r'(?is)<(?:p|address)[^>]*>(.*?)</(?:p|address)>', m.group(1))]
+        lines = [l for l in lines if len(l) > 5 and not re.fullmatch(r'(?i)skans( school system)?\.?', l)]
+        addr = re.sub(r'\s+,', ',', ', '.join(lines))
     return {'emails': emails, 'phones': phones, 'facebook': fb.strip(), 'instagram': ig.strip(), 'map': maps.strip(), 'address': addr}
 
 
