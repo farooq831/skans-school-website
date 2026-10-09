@@ -1,6 +1,6 @@
 <?php
 $page_title = 'Programs Offered';
-$page_description = 'Academic programs at SKANS School System, AECHS Campus, Rawalpindi: Early Years (Playgroup–Class 2), Juniors (Class 3–5) and Seniors (Class 6–10, Matric).';
+$page_description = 'Academic programs at SKANS School System, AECHS Campus, Rawalpindi: Early Years, Juniors and Seniors, from Playgroup to Matric, with the key objectives of each level.';
 require __DIR__ . '/includes/header.php';
 
 ?>

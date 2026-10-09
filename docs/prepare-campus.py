@@ -239,9 +239,11 @@ def find_details(old: Path):
     if m:                                  # all lines of the "Visit Us" block except a bare school name
         lines = [re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', x))).strip(' ,')
                  for x in re.findall(r'(?is)<(?:p|address)[^>]*>(.*?)</(?:p|address)>', m.group(1))]
-        lines = [l for l in lines if len(l) > 5 and not re.fullmatch(r'(?i)skans( school system)?\.?', l)]
-        addr = re.sub(r'\s+,', ',', ', '.join(lines))
-    return {'emails': emails, 'phones': phones, 'facebook': fb.strip(), 'instagram': ig.strip(), 'map': maps.strip(), 'address': addr}
+        lines = [l for l in lines if len(l) > 5 and not re.fullmatch(r'(?i)skans[\w\s]*?(school system|school)?\s*\.?', l)]
+        lines = [re.sub(r'(?i)^skans[\w\s]*?(school system|school)\s*,\s*', '', l) for l in lines]
+        addr = re.sub(r'\s+,', ',', ', '.join(l for l in lines if l))
+    wa = next((re.sub(r'\D', '', l) for l in links if re.search(r'wa\.me/|api\.whatsapp\.com', l)), '')
+    return {'whatsapp_link': wa, 'emails': emails, 'phones': phones, 'facebook': fb.strip(), 'instagram': ig.strip(), 'map': maps.strip(), 'address': addr}
 
 
 def digits(phone: str) -> str:
@@ -249,7 +251,7 @@ def digits(phone: str) -> str:
     return '92' + d[1:] if d.startswith('0') else d
 
 
-def write_config(old: Path, site: Path, campus: str, domain: str, name: str, city: str, classes: str):
+def write_config(old: Path, site: Path, campus: str, domain: str, name: str, city: str, classes: str, school: str = 'SKANS School System'):
     log(''); log('CONFIG')
     cd = site / 'campus-data'
     (cd / campus).mkdir(parents=True, exist_ok=True)
@@ -286,8 +288,11 @@ def write_config(old: Path, site: Path, campus: str, domain: str, name: str, cit
     phones = d['phones']
     office = next((p for p in phones if not is_mobile(p)), '+92 51 0000000')
     mobile = next((p for p in phones if is_mobile(p)), '+92 300 0000000')
+    w = d.get('whatsapp_link', '')
+    if w.startswith('923'):                     # the old WhatsApp button's number wins
+        mobile = next((p for p in phones if digits(p) == w), '+' + w[:2] + ' ' + w[2:5] + ' ' + w[5:])
     site_vals = {
-        'name': 'SKANS School System', 'campus': name, 'full_name': 'SKANS School System, ' + name, 'city': city,
+        'name': school, 'campus': name, 'full_name': school + ', ' + name, 'city': city,
         'classes': classes, 'tagline': 'Education for life', 'address': d['address'] or 'CAMPUS ADDRESS',
         'map_url': d['map'] or '', 'email': email,
         'whatsapp': digits(mobile), 'facebook': d['facebook'], 'instagram': d['instagram'],
@@ -351,6 +356,8 @@ def main():
     ap.add_argument('--domain', required=True, help='web address without https://, e.g. chakricampus.skansschool.edu.pk')
     ap.add_argument('--name', required=True, help='campus name, e.g. "Chakri Road Campus"')
     ap.add_argument('--city', default='Rawalpindi')
+    ap.add_argument('--school', default='SKANS School System', help='e.g. "SKANS International Islamic School"')
+    ap.add_argument('--logo-dir', default='', help='folder with skans-logo-*.png made by docs/make-logo.ps1 (campus logo)')
     ap.add_argument('--classes', default='Playgroup – Matric', help='short classes line, e.g. "Playgroup – Class 8"')
     a = ap.parse_args()
     if not re.fullmatch(r'[a-z0-9-]{2,40}', a.campus):
@@ -383,7 +390,12 @@ def main():
     copy_new_code(work / 'site')
     pick_pictures(old, work / 'site')
     copy_uploads(old, work / 'site')
-    write_config(old, work / 'site', a.campus, a.domain, a.name, a.city, a.classes)
+    write_config(old, work / 'site', a.campus, a.domain, a.name, a.city, a.classes, a.school)
+    if a.logo_dir:
+        n = 0
+        for f in Path(a.logo_dir).glob('skans-logo-*.png'):
+            shutil.copy2(f, work / 'site' / 'assets' / 'img' / f.name); n += 1
+        log(f'  campus logo: {n} files from {a.logo_dir} (same names and sizes as the SKANS logo)')
     mb = make_zip(work / 'site', base / f'{a.campus}-ready.zip')
     log(''); log(f'READY: _release/{a.campus}/{a.campus}-ready.zip ({mb:.1f} MB). Files 0644, folders 0755.')
     log('Upload it into the EMPTY campus folder, Extract, delete the zip, then run the database steps.')

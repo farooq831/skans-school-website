@@ -310,9 +310,9 @@ function apply_class_list(array $site, array $list, bool $custom): array
             $first = $rows[0]['class'];
             $last = $rows[count($rows) - 1]['class'];
             $level['range'] = $first === $last ? $first : $first . ' to ' . $last;
-            if (!array_intersect(array_map('class_key', array_column($rows, 'class')), ['class 9', 'class 10'])) {
-                unset($level['board']);
-            }
+        }
+        if ($custom && !array_intersect(array_map('class_key', array_column($rows, 'class')), ['class 9', 'class 10'])) {
+            unset($level['board']);                // exam board only with Class 9 / 10
         }
         $levels[] = $level;
     }
