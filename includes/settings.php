@@ -149,14 +149,16 @@ function campus_text(string $text, ?array $site = null): string
     }
     $max = $site['max_class'] ?? 'Class 10';
     $upto = $max === 'Class 10' ? 'Class 10 (Matric)' : $max;
+    $min = $site['min_class'] ?? 'Playgroup';                 // first class at this campus
+    $first = $site['first_level'] ?? 'Early Years';           // first level card
     return str_replace(
         ['SKANS School System, AECHS Campus', 'SKANS School System - AECHS Campus', 'SKANS AECHS Campus', 'AECHS Campus', 'Rawalpindi',
          // class range written in the page texts: follows "Highest class at this campus"
          'Playgroup to Class 10 (Matric)', 'Playgroup to Class 10', 'Playgroup to Matric', 'Early Years to Matric',
          'Seniors (Class 6–10, Matric)'],
         [$site['full_name'], $site['name'] . ' - ' . $site['campus'], 'SKANS ' . $site['campus'], $site['campus'], $site['city'] ?? 'Rawalpindi',
-         'Playgroup to ' . $upto, 'Playgroup to ' . $max, 'Playgroup to ' . ($max === 'Class 10' ? 'Matric' : $max),
-         'Early Years to ' . ($max === 'Class 10' ? 'Matric' : $max),
+         $min . ' to ' . $upto, $min . ' to ' . $max, $min . ' to ' . ($max === 'Class 10' ? 'Matric' : $max),
+         $first . ' to ' . ($max === 'Class 10' ? 'Matric' : $max),
          'Seniors (Class 6–' . ($max === 'Class 10' ? '10, Matric' : preg_replace('/^Class /', '', $max)) . ')'],
         $text
     );
@@ -217,7 +219,7 @@ function load_levels(array $levels): array
     if (empty($db_ok)) {
         return $levels;
     }
-    $r = @$conn->query('SELECT id, heading, name, description, image FROM academic_prog WHERE id BETWEEN 1 AND 3');
+    $r = @$conn->query('SELECT id, heading, name, description, image FROM academic_prog WHERE id BETWEEN 1 AND ' . max(3, count($levels)));
     if (!$r) {
         return $levels;
     }
@@ -317,6 +319,8 @@ function apply_class_list(array $site, array $list, bool $custom): array
         $levels[] = $level;
     }
     $site['levels'] = $levels;
+    $site['min_class'] = $list ? trim(preg_replace('/\s*\(.*\)\s*$/u', '', $list[0]['class'])) : 'Playgroup';
+    $site['first_level'] = $levels ? $levels[0]['name'] : 'Early Years';
     $site['max_class'] = $list ? trim(preg_replace('/\s*\(.*\)\s*$/u', '', $list[count($list) - 1]['class'])) : 'Class 10'; // campus_text()
     return $site;
 }
@@ -339,4 +343,24 @@ function fees_for_classes(array $fee_rows, array $classes, array $columns): arra
         $out[] = $by_name[class_key($name)] ?? (['class' => preg_replace('/\s*\(.*\)\s*$/u', '', $name)] + array_fill_keys(array_keys($columns), null));
     }
     return $out;
+}
+
+/** Number of level cards: 3 (Early Years, Juniors, Seniors) or more if Classes & ages uses card 4, 5 or 6. */
+function campus_level_count(array $list): int
+{
+    $max = 2;
+    foreach ($list as $r) {
+        $max = max($max, (int) ($r['level'] ?? 0));
+    }
+    return min(6, $max + 1);
+}
+
+/** Add cards 4-6 when a campus needs them (text and picture come from Academic Programs #4-#6). */
+function pad_levels(array $levels, int $count): array
+{
+    for ($i = count($levels); $i < $count; $i++) {
+        $levels[] = ['id' => 'level-' . ($i + 1), 'name' => 'Card ' . ($i + 1), 'range' => '', 'classes' => [],
+                     'image' => 'assets/img/level-seniors.jpeg', 'objectives' => []];
+    }
+    return $levels;
 }

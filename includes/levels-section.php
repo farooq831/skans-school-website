@@ -1,7 +1,7 @@
 <?php
 // includes/levels-section.php : "Academic Programs" band with the three level cards.
 // Used on the Programs Offered page and the Home page, so both always show the same thing.
-// Data: $site['levels'] (data/site.php + admin Academic Programs #1-#3, see load_levels()).
+// Data: $site['levels'] (data/site.php + admin Academic Programs #1-#6, see load_levels(); 3 cards or up to 6).
 ?>
 <section class="sk-section sk-section--navy sk-levels-band">
     <div class="sk-container">

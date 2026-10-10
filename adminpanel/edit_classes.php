@@ -1,6 +1,8 @@
 <?php
 require __DIR__ . '/auth.php'; // login check (added Oct 2026)
 include 'db.php';
+require_once __DIR__ . '/admin_lib.php';
+$level_count = campus_level_count(campus_class_list($conn)); // entries #1..#N are the level cards
 
 if (isset($_GET['id'])) {
     $id = (int) $_GET['id'];
@@ -129,7 +131,7 @@ $conn->close();
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="form-container">
-<?php $is_card = isset($classes['id']) && (int) $classes['id'] <= 3; // #1-#3 = the level cards on the website ?>
+<?php $is_card = isset($classes['id']) && (int) $classes['id'] <= $level_count; // the level cards on the website ?>
                     <h2 class="text-center"><?= $is_card ? 'Edit Level Card #' . (int) $classes['id'] : 'Edit Academic Program' ?></h2>
 <?php if ($is_card): ?>
                     <div class="alert alert-light small">This is one of the <strong>3 level cards</strong> on the website (Home, Admissions, Programs Offered). Saving updates the website straight away.</div>

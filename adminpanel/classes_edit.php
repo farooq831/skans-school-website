@@ -8,7 +8,17 @@ require_once __DIR__ . '/admin_lib.php';
 // Saved in site_settings 'class_list'; "Restore original" goes back to the classes in data/site.php.
 
 $site_defaults = require SK_ROOT . '/data/site.php';
+// Level cards to choose from: 6 slots = Academic Programs #1-#6 (their names), else the default names.
 $level_names = array_map(function ($l) { return $l['name']; }, $site_defaults['levels']); // 0, 1, 2
+for ($i = count($level_names); $i < 6; $i++) {
+    $level_names[$i] = 'Card ' . ($i + 1);
+}
+$ap = @$conn->query('SELECT id, name FROM academic_prog WHERE id BETWEEN 1 AND 6');
+while ($ap && ($a = $ap->fetch_assoc())) {
+    if (trim((string) $a['name']) !== '') {
+        $level_names[(int) $a['id'] - 1] = 'Card ' . (int) $a['id'] . ': ' . trim($a['name']);
+    }
+}
 $saved = settings_all($conn)['class_list'] ?? null;
 $is_custom = is_array($saved) && $saved;
 $rows = campus_class_list($conn);

@@ -29,8 +29,10 @@ $db_ok = isset($conn) && $conn instanceof mysqli && !$conn->connect_error;
 
 // Admin settings (school/campus name, contact details, social links) override data/site.php.
 $site = apply_site_settings($site, $db_ok ? settings_all($conn) : []);
-$site['levels'] = load_levels($site['levels']); // level cards: admin Academic Programs #1-#3
-$site = apply_class_list($site, campus_class_list(), $db_ok && !empty(settings_all($conn)['class_list'])); // Settings > Classes & ages
+$sk_classes = campus_class_list();                                                    // Settings > Classes & ages
+$site['levels'] = pad_levels($site['levels'], campus_level_count($sk_classes));       // 3 cards, or up to 6
+$site['levels'] = load_levels($site['levels']); // level cards: admin Academic Programs #1-#6
+$site = apply_class_list($site, $sk_classes, $db_ok && !empty(settings_all($conn)['class_list']));
 
 // Count one visit per IP address per day (same as the old header did, now with a safe query).
 if ($db_ok) {
