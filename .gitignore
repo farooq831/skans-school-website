@@ -36,3 +36,6 @@ Thumbs.db
 
 # Python cache
 __pycache__/
+
+# Chatbot upload package (built from the files in chatbot/)
+chatbot/chatbot-upload.zip
