@@ -8,13 +8,13 @@
 </head>
 <body>
 <h1>SKANS chatbot: test page</h1>
-<p>Click <strong>Help</strong> at the bottom left. On this page no campus is chosen, like on the main site.</p>
-<p>To test a campus site, add <code>?campus=golra</code> to the address: the script below passes it on.</p>
+<p>The round SKANS button is at the bottom left. A greeting appears after a few seconds. On this page no campus is chosen, like on the main site.</p>
+<p>To test a campus site, add <code>?campus=golra</code> to the address (ids are in campuses.js).</p>
 <script>
   // Test only: ?campus=<id> acts like a campus website.
   var c = new URLSearchParams(location.search).get('campus');
   var s = document.createElement('script');
-  s.src = 'chatbot.js?v=1'; s.defer = true;
+  s.src = 'chatbot.js?v=2'; s.defer = true;
   if (c) s.setAttribute('data-campus', c);
   document.body.appendChild(s);
 </script>

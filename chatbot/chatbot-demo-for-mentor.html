@@ -15,7 +15,7 @@
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-[hidden] { display: none !important; }   /* the chat window stays closed until Help is clicked */
+[hidden] { display: none !important; }   /* hidden elements stay hidden */
 body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.55 var(--sans); }
 .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 48px; }
 h1, h2, h3 { font-family: var(--serif); color: var(--navy); text-wrap: balance; margin: 0; }
@@ -71,34 +71,6 @@ button:focus-visible, select:focus-visible, a:focus-visible, input:focus-visible
 .c-hero p { color: #DCE1EA; margin-top: 12px; max-width: 52ch; }
 .c-wa { position: absolute; right: 16px; bottom: 16px; width: 52px; height: 52px; border-radius: 50%; background: var(--wa); display: grid; place-items: center; color: #fff; font-weight: 700; box-shadow: 0 6px 16px rgba(0,0,0,.25); }
 
-/* ---- the chatbot (same look as chatbot.css; positioned inside the frame for the demo) ---- */
-.skc-launch, .skc-box, .skc-box * { box-sizing: border-box; font-family: var(--sans); }
-.skc-launch { position: absolute; left: 16px; bottom: 16px; z-index: 5; display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px 12px 14px; border: 0; border-radius: 999px; cursor: pointer; background: var(--navy); color: #fff; font-size: 15px; font-weight: 600; line-height: 1; box-shadow: 0 8px 24px rgba(25,42,74,.35); }
-.skc-launch svg { width: 20px; height: 20px; fill: var(--gold); }
-.skc-launch[hidden] { display: none; }
-.skc-box { position: absolute; left: 16px; bottom: 16px; z-index: 6; width: 370px; max-width: calc(100% - 32px); height: calc(100% - 32px); max-height: 560px; display: flex; flex-direction: column; background: #fff; color: var(--ink); border-radius: 16px; overflow: hidden; box-shadow: 0 18px 50px rgba(25,42,74,.35); border-top: 4px solid var(--gold); }
-.skc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px; background: var(--navy); color: #fff; }
-.skc-head strong { display: block; font-family: var(--serif); font-size: 19px; }
-.skc-sub { display: block; font-size: 12px; color: #D9DEE8; margin-top: 2px; }
-.skc-close { border: 0; background: transparent; color: #fff; font-size: 26px; line-height: 1; cursor: pointer; padding: 2px 8px; border-radius: 8px; }
-.skc-log { flex: 1; overflow-y: auto; padding: 14px; background: #F7F4EE; }
-.skc-msg { max-width: 88%; margin: 0 0 10px; padding: 10px 13px; border-radius: 14px; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
-.skc-bot { background: #fff; border: 1px solid #E7E1D6; border-top-left-radius: 4px; }
-.skc-user { margin-left: auto; background: var(--navy); color: #fff; border-top-right-radius: 4px; }
-.skc-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: -2px 0 12px; }
-.skc-btn, .skc-link { display: inline-block; padding: 8px 12px; border-radius: 999px; font-size: 13px; line-height: 1.3; text-align: left; cursor: pointer; text-decoration: none; }
-.skc-btn { border: 1px solid var(--navy); background: #fff; color: var(--navy); }
-.skc-btn:hover { background: var(--navy); color: #fff; }
-.skc-btn.skc-quiet { border-color: #CFC6B6; color: var(--muted); }
-.skc-btn.skc-q, .skc-btn.skc-campus { width: 100%; border-radius: 10px; }
-.skc-link { border: 1px solid var(--gold); background: #fff; color: var(--gold-ink); font-weight: 600; }
-.skc-link.skc-main { background: var(--gold); color: #fff; }
-.skc-link.skc-wa { border-color: #1DA851; color: #157A3B; }
-.skc-form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #E7E1D6; background: #fff; }
-.skc-form input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #CFC6B6; border-radius: 10px; font-size: 14px; color: var(--ink); background: #fff; }
-.skc-send { border: 0; border-radius: 10px; padding: 0 16px; background: var(--navy); color: #fff; font-weight: 600; cursor: pointer; }
-.demo-note { position: absolute; left: 16px; bottom: 76px; z-index: 4; background: var(--gold); color: #fff; font-size: 12.5px; font-weight: 600; padding: 6px 10px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
-
 /* reference */
 .ref { display: grid; gap: 28px; margin-top: 36px; }
 .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
@@ -125,13 +97,176 @@ details p { margin-top: 6px; white-space: pre-line; color: var(--ink); }
 @media (max-width: 640px) {
   .stage { height: 600px; }
   .m-nav, .c-nav { display: none; }
-  .skc-box { left: 8px; bottom: 8px; width: auto; right: 8px; max-width: none; height: calc(100% - 16px); }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 </style>
+<style data-skc>/* SKANS chatbot. Brand: navy #192A4A, gold #BD852C, Times New Roman headings.
+   Every class starts with skc- so it never clashes with a website's own styles. */
+.skc-root {
+  --skc-navy: #192A4A; --skc-navy-2: #23396A; --skc-gold: #BD852C; --skc-gold-ink: #7A5212; --skc-gold-soft: #F6ECD9;
+  --skc-paper: #F7F4EE; --skc-ink: #1E2738; --skc-muted: #5D6577; --skc-line: #E6DFD2; --skc-wa: #1A8F46;
+  --skc-font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --skc-serif: "Times New Roman", Times, Georgia, serif;
+}
+.skc-root, .skc-root * { box-sizing: border-box; font-family: var(--skc-font); }
+.skc-root [hidden] { display: none !important; }
+.skc-root button { font: inherit; }
+.skc-root :focus-visible { outline: 3px solid var(--skc-gold); outline-offset: 2px; }
+
+/* ---------- launcher: round SKANS badge with a waving hand ---------- */
+.skc-launch {
+  position: fixed; bottom: 22px; z-index: 2147483000; width: 62px; height: 62px; padding: 0; border: 0; border-radius: 50%;
+  background: var(--skc-navy); cursor: pointer; box-shadow: 0 10px 28px rgba(25, 42, 74, .38), 0 0 0 4px rgba(189, 133, 44, .22);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.skc-left .skc-launch { left: 22px; } .skc-right .skc-launch { right: 22px; }
+.skc-launch:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 14px 32px rgba(25, 42, 74, .45), 0 0 0 6px rgba(189, 133, 44, .28); }
+.skc-launch-face, .skc-launch-face svg { display: block; width: 100%; height: 100%; }
+.skc-launch::after {                                   /* soft pulse ring */
+  content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(189, 133, 44, .55);
+  animation: skc-pulse 2.6s ease-out infinite;
+}
+.skc-wave {
+  position: absolute; top: -10px; right: -8px; width: 30px; height: 30px; display: grid; place-items: center;
+  font-size: 18px; line-height: 1; background: #fff; border-radius: 50%; box-shadow: 0 3px 10px rgba(25, 42, 74, .25);
+  transform-origin: 70% 75%; animation: skc-wave 2.6s ease-in-out infinite;
+}
+@keyframes skc-wave { 0%, 60%, 100% { transform: rotate(0); } 10% { transform: rotate(16deg); } 20% { transform: rotate(-10deg); } 30% { transform: rotate(14deg); } 40% { transform: rotate(-6deg); } 50% { transform: rotate(10deg); } }
+@keyframes skc-pulse { 0% { transform: scale(1); opacity: .9; } 80%, 100% { transform: scale(1.35); opacity: 0; } }
+
+/* ---------- greeting bubble next to the launcher ---------- */
+.skc-nudge {
+  position: fixed; bottom: 98px; z-index: 2147483000; display: flex; align-items: flex-start; gap: 4px; max-width: 260px;
+  background: #fff; color: var(--skc-ink); border-radius: 16px; padding: 4px 4px 4px 0;
+  box-shadow: 0 14px 34px rgba(25, 42, 74, .22); border: 1px solid var(--skc-line);
+  opacity: 0; transform: translateY(8px) scale(.96); transition: opacity .35s ease, transform .35s ease;
+}
+.skc-left .skc-nudge { left: 22px; border-bottom-left-radius: 4px; } .skc-right .skc-nudge { right: 22px; border-bottom-right-radius: 4px; }
+.skc-nudge.skc-in { opacity: 1; transform: none; }
+.skc-nudge-text { border: 0; background: transparent; text-align: left; padding: 10px 6px 10px 14px; cursor: pointer; color: inherit; }
+.skc-nudge-text strong { display: block; font-family: var(--skc-serif); font-size: 17px; color: var(--skc-navy); }
+.skc-nudge-text span { display: block; font-size: 13.5px; color: var(--skc-muted); margin-top: 2px; line-height: 1.4; }
+.skc-nudge-x { border: 0; background: transparent; color: var(--skc-muted); font-size: 20px; line-height: 1; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; flex: none; }
+.skc-nudge-x:hover { background: var(--skc-paper); color: var(--skc-navy); }
+
+/* ---------- chat window ---------- */
+.skc-box {
+  position: fixed; bottom: 22px; z-index: 2147483001; width: 384px; max-width: calc(100vw - 24px);
+  height: 600px; max-height: calc(100vh - 44px); display: flex; flex-direction: column;
+  background: var(--skc-paper); color: var(--skc-ink); border-radius: 20px; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(25, 42, 74, .32), 0 2px 8px rgba(25, 42, 74, .12);
+  animation: skc-open .28s cubic-bezier(.2, .8, .2, 1);
+}
+.skc-left .skc-box { left: 22px; transform-origin: bottom left; } .skc-right .skc-box { right: 22px; transform-origin: bottom right; }
+@keyframes skc-open { from { opacity: 0; transform: translateY(14px) scale(.96); } to { opacity: 1; transform: none; } }
+
+.skc-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 16px 16px 18px; color: #fff;
+  background: linear-gradient(135deg, var(--skc-navy) 0%, var(--skc-navy-2) 100%); border-bottom: 3px solid var(--skc-gold);
+}
+.skc-who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.skc-avatar { width: 44px; height: 44px; flex: none; border-radius: 50%; box-shadow: 0 0 0 3px rgba(255, 255, 255, .12); }
+.skc-avatar svg { display: block; width: 100%; height: 100%; }
+.skc-title strong { display: block; font-family: var(--skc-serif); font-size: 20px; letter-spacing: .2px; line-height: 1.15; }
+.skc-sub { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #D5DBE7; margin-top: 3px; }
+.skc-dot { width: 8px; height: 8px; border-radius: 50%; background: #45D07A; box-shadow: 0 0 0 3px rgba(69, 208, 122, .25); display: inline-block; }
+.skc-close { width: 36px; height: 36px; flex: none; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .1); cursor: pointer; display: grid; place-items: center; }
+.skc-close svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; fill: none; }
+.skc-close:hover { background: rgba(255, 255, 255, .2); }
+
+.skc-log { flex: 1; overflow-y: auto; padding: 16px 14px 8px; scroll-behavior: smooth; overscroll-behavior: contain; }
+.skc-log::-webkit-scrollbar { width: 8px; } .skc-log::-webkit-scrollbar-thumb { background: #D9D1C2; border-radius: 8px; }
+
+.skc-row { display: flex; align-items: flex-end; gap: 8px; margin: 0 0 10px; animation: skc-in .25s ease both; }
+.skc-row-user { justify-content: flex-end; }
+@keyframes skc-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.skc-mini { width: 28px; height: 28px; flex: none; }
+.skc-mini svg { display: block; width: 100%; height: 100%; }
+.skc-msg { max-width: 82%; padding: 10px 14px; border-radius: 18px; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.skc-bot { background: #fff; border: 1px solid var(--skc-line); border-bottom-left-radius: 6px; box-shadow: 0 1px 2px rgba(25, 42, 74, .05); }
+.skc-user { background: var(--skc-navy); color: #fff; border-bottom-right-radius: 6px; }
+
+.skc-typing { display: inline-flex; gap: 5px; align-items: center; padding: 13px 16px; }
+.skc-typing i { width: 7px; height: 7px; border-radius: 50%; background: #A9B0BE; animation: skc-blink 1.1s infinite ease-in-out; }
+.skc-typing i:nth-child(2) { animation-delay: .15s; } .skc-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes skc-blink { 0%, 80%, 100% { opacity: .35; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+/* ---------- buttons and links under a message ---------- */
+.skc-actions { display: flex; flex-wrap: wrap; gap: 7px; margin: -2px 0 14px 36px; animation: skc-in .3s ease both; }
+.skc-btn, .skc-link {
+  display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border-radius: 999px; font-size: 13.5px; line-height: 1.3;
+  text-align: left; cursor: pointer; text-decoration: none; transition: background .15s ease, color .15s ease, border-color .15s ease, transform .15s ease;
+}
+.skc-btn { border: 1.5px solid var(--skc-navy); background: #fff; color: var(--skc-navy); font-weight: 500; }
+.skc-btn:hover { background: var(--skc-navy); color: #fff; }
+.skc-btn:active, .skc-link:active { transform: scale(.97); }
+.skc-btn.skc-quiet { border-color: #D3CABA; color: var(--skc-muted); }
+.skc-btn.skc-quiet:hover { background: #EFE9DE; color: var(--skc-navy); }
+.skc-ic { font-size: 15px; line-height: 1; flex: none; }
+.skc-lab { display: flex; flex-direction: column; min-width: 0; }
+.skc-note { font-size: 12px; color: var(--skc-muted); margin-top: 1px; }
+.skc-btn:hover .skc-note { color: #D5DBE7; }
+
+/* topic cards: 2-column grid */
+.skc-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.skc-cards .skc-btn { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px; border-radius: 14px; border: 1px solid var(--skc-line); min-height: 70px; box-shadow: 0 1px 2px rgba(25, 42, 74, .05); }
+.skc-cards .skc-ic { font-size: 20px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: var(--skc-gold-soft); }
+.skc-cards .skc-t { font-weight: 600; font-size: 13.5px; }
+.skc-cards .skc-btn:hover { border-color: var(--skc-navy); transform: translateY(-1px); }
+.skc-cards .skc-btn:hover .skc-ic { background: rgba(255, 255, 255, .14); }
+
+/* list rows: campuses and questions */
+.skc-list { display: flex; flex-direction: column; gap: 6px; }
+.skc-list .skc-btn { width: 100%; border-radius: 12px; border: 1px solid var(--skc-line); padding: 10px 12px; }
+.skc-list .skc-btn:hover { border-color: var(--skc-navy); }
+.skc-list .skc-btn::after { content: "›"; margin-left: auto; font-size: 20px; line-height: 1; color: var(--skc-gold); }
+.skc-list .skc-btn.skc-quiet::after { content: none; }
+.skc-list .skc-t { font-weight: 500; }
+
+/* links: page / WhatsApp / call */
+.skc-link { border: 1.5px solid var(--skc-gold); background: #fff; color: var(--skc-gold-ink); font-weight: 600; }
+.skc-link:hover { background: var(--skc-gold); color: #fff; }
+.skc-link.skc-main { background: var(--skc-gold); color: #fff; box-shadow: 0 4px 12px rgba(189, 133, 44, .3); }
+.skc-link.skc-main:hover { background: #A2701F; }
+.skc-link.skc-wa { border-color: var(--skc-wa); color: #146B35; }
+.skc-link.skc-wa:hover { background: var(--skc-wa); color: #fff; }
+.skc-link.skc-call { border-color: var(--skc-navy); color: var(--skc-navy); }
+.skc-link.skc-call:hover { background: var(--skc-navy); color: #fff; }
+
+/* ---------- input ---------- */
+.skc-form { display: flex; gap: 8px; align-items: center; padding: 10px 12px 6px; background: #fff; border-top: 1px solid var(--skc-line); }
+.skc-form input {
+  flex: 1; min-width: 0; height: 44px; padding: 0 16px; border: 1.5px solid #DDD5C6; border-radius: 999px;
+  font-size: 14.5px; color: var(--skc-ink); background: var(--skc-paper); transition: border-color .15s ease, background .15s ease;
+}
+.skc-form input:focus { border-color: var(--skc-navy); background: #fff; outline: none; }
+.skc-send { width: 44px; height: 44px; flex: none; border: 0; border-radius: 50%; background: var(--skc-navy); cursor: pointer; display: grid; place-items: center; transition: background .15s ease, transform .15s ease; }
+.skc-send svg { width: 20px; height: 20px; fill: var(--skc-gold); margin-left: 2px; }
+.skc-send:hover { background: var(--skc-navy-2); transform: scale(1.05); }
+.skc-foot { margin: 0; padding: 2px 12px 10px; background: #fff; text-align: center; font-size: 11px; color: #8A90A0; letter-spacing: .02em; }
+
+/* ---------- inside a demo frame instead of the page corner ---------- */
+.skc-contained .skc-launch, .skc-contained .skc-nudge, .skc-contained .skc-box { position: absolute; }
+.skc-contained .skc-box { max-height: calc(100% - 32px); max-width: calc(100% - 32px); bottom: 16px; }
+.skc-contained.skc-left .skc-box { left: 16px; } .skc-contained.skc-right .skc-box { right: 16px; }
+
+/* ---------- phones: full screen ---------- */
+@media (max-width: 480px) {
+  .skc-box { left: 0 !important; right: 0 !important; bottom: 0; width: 100%; max-width: none; height: 100%; max-height: none; border-radius: 0; }
+  .skc-contained .skc-box { left: 8px !important; right: 8px !important; bottom: 8px; width: auto; height: calc(100% - 16px); border-radius: 16px; }
+  .skc-launch { width: 56px; height: 56px; bottom: 16px; }
+  .skc-left .skc-launch { left: 16px; } .skc-right .skc-launch { right: 16px; }
+  .skc-nudge { bottom: 86px; max-width: calc(100vw - 40px); }
+  .skc-left .skc-nudge { left: 16px; } .skc-right .skc-nudge { right: 16px; }
+  .skc-actions { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skc-root *, .skc-root *::after { animation: none !important; transition: none !important; }
+  .skc-log { scroll-behavior: auto; }
+}
+</style>
 </head>
 <body>
-
 <div class="wrap">
   <header class="top">
     <span class="eyebrow">SKANS School System · Website plan</span>
@@ -146,20 +281,13 @@ details p { margin-top: 6px; white-space: pre-line; color: var(--ink); }
     </div>
     <label for="campus-pick">Campus</label>
     <select id="campus-pick"></select>
-    <span class="hint">Click <strong>Help</strong> (bottom-left of the page below). Links open the real campus pages.</span>
+    <span class="hint">Close the chat (×) to see the waving SKANS button. Links open the real campus pages.</span>
   </div>
 
   <div class="frame">
     <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url" id="url">https://skansschool.edu.pk/</span></div>
     <div class="stage" id="stage">
       <div class="site" id="site"></div>
-      <span class="demo-note" id="note">Try me ↓</span>
-      <button class="skc-launch" id="launch" type="button" aria-label="Open SKANS help chat" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg><span>Help</span></button>
-      <section class="skc-box" id="box" role="dialog" aria-label="SKANS help" hidden>
-        <header class="skc-head"><div><strong>SKANS Help</strong><span class="skc-sub">Choose a button or type a question</span></div><button class="skc-close" id="close" type="button" aria-label="Close">×</button></header>
-        <div class="skc-log" id="log" aria-live="polite"></div>
-        <form class="skc-form" id="form"><input id="q" type="text" maxlength="120" placeholder="Type a question, e.g. fees" aria-label="Your question"><button class="skc-send" type="submit">Ask</button></form>
-      </section>
     </div>
   </div>
 
@@ -195,16 +323,515 @@ details p { margin-top: 6px; white-space: pre-line; color: var(--ink); }
       <div class="cols">
         <div class="box"><h3>Files</h3><p>One folder on the main site, <code>public_html/chatbot/</code>:</p><ul><li><code>chatbot.js</code> and <code>chatbot.css</code>: the chat window</li><li><code>campuses.js</code>: names, addresses, phones, WhatsApp</li><li><code>faq.js</code>: the common questions</li></ul></div>
         <div class="box"><h3>Add to a website</h3><p>One line before <code>&lt;/body&gt;</code>:</p><pre>&lt;script src="https://skansschool.edu.pk/chatbot/chatbot.js?v=1" defer&gt;&lt;/script&gt;</pre><p style="margin-top:8px">Main site: <code>index.html</code>. Campus sites: <code>includes/footer.php</code>.</p></div>
-        <div class="box"><h3>Change an answer or number</h3><p>Edit <code>faq.js</code> or <code>campuses.js</code> in cPanel File Manager and save. All 10 websites update at once. A typing mistake hides the Help button; it never breaks a page.</p></div>
+        <div class="box"><h3>Change an answer or number</h3><p>Edit <code>faq.js</code> or <code>campuses.js</code> in cPanel File Manager and save. All 10 websites update at once. A typing mistake only hides the chat button; it never breaks a page.</p></div>
         <div class="box"><h3>Cost and data</h3><ul><li>No AI service, no API key, no monthly cost</li><li>No server code or database</li><li>Collects no personal data</li><li>Works on phone, tablet and computer</li></ul></div>
       </div>
     </section>
   </div>
 </div>
 
+<script>/* SKANS chatbot - the campuses.  Edit in cPanel File Manager, then Save. Every website updates at once.
+ *
+ * Keep the format: each campus is one { ... } block, text inside "double quotes", a comma between blocks.
+ *   id        short name, lowercase (do not change once used)
+ *   name      shown on the buttons
+ *   url       the campus website, ending with /
+ *   classes   short line under the name ("" = not shown)
+ *   phone     shown on the Call button ("" = no Call button)        tel: digits for dialling, with +92
+ *   whatsapp  digits only, with 92 ("" = no WhatsApp button)
+ *   pages     only for campuses still on the OLD website design: which old page each topic opens
+ */
+window.SKANS_CHAT_CAMPUSES = [
+  { "id": "aechs",  "name": "AECHS Campus",            "url": "https://aechscampus.skansschool.edu.pk/",
+    "classes": "Playgroup – Matric",   "phone": "+92 51 8468475",  "tel": "+92518468475",  "whatsapp": "923335352965" },
+
+  { "id": "pwd",    "name": "PWD Campus",              "url": "https://pwdcampus.skansschool.edu.pk/",
+    "classes": "Playgroup – Class 8",  "phone": "+92 51 8773775",  "tel": "+92518773775",  "whatsapp": "923315354843" },
+
+  { "id": "chakri", "name": "Chakri Road Campus",      "url": "https://chakricampus.skansschool.edu.pk/",
+    "classes": "",                     "phone": "+92 51 5575082",  "tel": "+92515575082",  "whatsapp": "923359483369" },
+
+  { "id": "harley", "name": "Harley Street Campus",    "url": "https://hscampus.skansschool.edu.pk/",
+    "classes": "Playgroup – Matric",   "phone": "+92 51 5176066",  "tel": "+92515176066",  "whatsapp": "923328922225" },
+
+  { "id": "golra",  "name": "Golra Junior Campus",     "url": "https://golrajuniorcampus.skansschool.edu.pk/",
+    "classes": "Playgroup – Class 5",  "phone": "+92 51 2227475",  "tel": "+92512227475",  "whatsapp": "923205005858" },
+
+  { "id": "golrasr","name": "Golra Senior Campus",     "url": "https://golraseniorcampus.skansschool.edu.pk/",
+    "classes": "Class 6 – A Level",    "phone": "+92 51 2229454",  "tel": "+92512229454",  "whatsapp": "923467845010" },
+
+  { "id": "westridgesr", "name": "Westridge Senior Campus", "url": "https://westridgeseniorcampus.skansschool.edu.pk/",
+    "classes": "Class 3 – Matric / O Level", "phone": "+92 51 8355546", "tel": "+92518355546", "whatsapp": "923345359458",
+    "pages": { "fees": "admissions.php", "policy": "admissions.php" } },
+
+  { "id": "westridgejr", "name": "Westridge Junior Campus", "url": "https://westridgejuniorcampus.skansschool.edu.pk/",
+    "classes": "",                     "phone": "+92 51 8773091",  "tel": "+92518773091",  "whatsapp": "923005070778",
+    "pages": { "fees": "admissions.php", "policy": "admissions.php" } },
+
+  { "id": "westridgeeye", "name": "Westridge EYE Campus", "url": "https://westridgeeyecampus.skansschool.edu.pk/",
+    "classes": "",                     "phone": "",                "tel": "",              "whatsapp": "",
+    "pages": { "fees": "admissions.php", "policy": "admissions.php" } }
+];
+</script>
+<script>/* SKANS chatbot - common questions.  Edit in cPanel File Manager, then Save. Every website updates at once.
+ *
+ * Each question is one { ... } block:
+ *   q         the question (shown as a button)
+ *   a         the answer. Start a new line with \n
+ *   keywords  words parents may type, used by the search box (lowercase)
+ *   campus    "all", or one campus id from campuses.js (e.g. "golrasr") to show it only there
+ *   topic     optional: adds a button to that page of the chosen campus:
+ *             fees, admissions, policy, programs, special, facilities, faculty, news, about, contact, policies
+ *   link      optional: a full web address for a button instead of a topic, with "linkText" for its label
+ * Only write facts the school has confirmed. Keep the commas between blocks.
+ */
+window.SKANS_CHAT_FAQ = [
+  { "q": "How can I apply for admission?",
+    "a": "1. Meet the Principal at the campus.\n2. Pay the registration fee at the admin and accounts office.\n3. Fill in the admission form.\n4. Your child takes the admission test and interview.\n5. The Principal approves the admission.",
+    "keywords": ["apply", "admission", "admit", "enrol", "enroll", "join", "register", "registration", "procedure", "process"],
+    "campus": "all", "topic": "admissions" },
+
+  { "q": "Which documents are required for admission?",
+    "a": "• School leaving certificate and progress report of the previous school\n• Copy of Birth Certificate / NADRA B-Form (mandatory)\n• Copy of father’s CNIC (mandatory)\n• Two passport-size photographs of the child",
+    "keywords": ["document", "documents", "papers", "b-form", "bform", "birth certificate", "cnic", "photo", "photographs", "leaving certificate"],
+    "campus": "all", "topic": "policy" },
+
+  { "q": "Is there an admission test?",
+    "a": "Yes. Admission is given on merit, after the admission test and an interview. The school management decides on every admission.",
+    "keywords": ["test", "entry test", "interview", "merit", "exam for admission"],
+    "campus": "all", "topic": "admissions" },
+
+  { "q": "What is the minimum age for each class?",
+    "a": "Each campus shows its age guide on the Admissions page, class by class.",
+    "keywords": ["age", "minimum age", "age limit", "how old", "years old", "playgroup age", "nursery age"],
+    "campus": "all", "topic": "admissions" },
+
+  { "q": "What are the fees?",
+    "a": "Fees differ by campus and by class. The Fee Structure page shows the registration, admission, security, annual and monthly tuition fees.",
+    "keywords": ["fee", "fees", "tuition", "charges", "cost", "price", "how much", "monthly fee", "fee structure"],
+    "campus": "all", "topic": "fees" },
+
+  { "q": "What do I pay at the time of admission?",
+    "a": "The first payment is made in advance and includes the admission fee, security fee, registration fee and one month’s tuition fee.",
+    "keywords": ["first payment", "at admission", "admission fee", "security fee", "registration fee", "advance"],
+    "campus": "all", "topic": "fees" },
+
+  { "q": "When is the monthly fee due?",
+    "a": "The monthly tuition fee must be paid by the 10th of every month. After that a late fine is charged.\nIf it is still unpaid, notices are sent on the 11th, 20th and 26th, and the student’s name is struck off by the 10th of the following month.",
+    "keywords": ["due date", "last date", "10th", "late fee", "fine", "penalty", "fee date", "when to pay"],
+    "campus": "all", "topic": "policy" },
+
+  { "q": "How can I pay the fee?",
+    "a": "All fees are paid in the bank or online. The school accounts office does not accept cash.",
+    "keywords": ["pay", "payment", "bank", "online", "cash", "challan", "deposit"],
+    "campus": "all", "topic": "policy" },
+
+  { "q": "Is there an annual fee?",
+    "a": "Yes. Annual charges are paid in addition to the monthly tuition fee. Fee increases apply when approved by the school management.",
+    "keywords": ["annual", "annual charges", "yearly", "resource charges", "increase"],
+    "campus": "all", "topic": "fees" },
+
+  { "q": "Is the security fee refunded?",
+    "a": "The security fee is refunded when the student leaves, after all school dues are cleared. Please request the school leaving certificate and refund one month in advance; with shorter notice, one month’s fee is adjusted from the security.",
+    "keywords": ["security", "refund", "refundable", "deposit back", "return"],
+    "campus": "all", "topic": "policy" },
+
+  { "q": "How do I get a school leaving certificate?",
+    "a": "Submit a request to the campus office one month in advance. The certificate is issued after all school dues are cleared.",
+    "keywords": ["leaving certificate", "slc", "leave school", "withdraw", "transfer", "migration"],
+    "campus": "all", "topic": "policy" },
+
+  { "q": "What is the attendance requirement?",
+    "a": "Students need at least 90% attendance to sit the annual exams. A student absent for more than 15 days may have their name struck off.",
+    "keywords": ["attendance", "absent", "absence", "leave", "90%", "struck off"],
+    "campus": "all", "topic": "policy" },
+
+  { "q": "Which classes does each campus offer?",
+    "a": "Each campus has its own classes. Choose a campus to see its programs, or look at the list of campuses.",
+    "keywords": ["classes", "class", "grades", "levels", "which class", "programs", "sections"],
+    "campus": "all", "topic": "programs" },
+
+  { "q": "Which campus offers O Level, A Level or IGCSE?",
+    "a": "Golra Senior Campus offers IGCSE and O / A Level (Class 6 to A Level).\nWestridge Senior Campus offers IGCSE / O Level with Oxford AQA alongside Matric.",
+    "keywords": ["o level", "a level", "o-level", "a-level", "igcse", "cambridge", "oxford aqa", "aqa", "international"],
+    "campus": "all" },
+
+  { "q": "Which campus offers Intermediate (FSc, ICS, ICOM)?",
+    "a": "Golra Senior Campus offers Intermediate (Class 11 and 12): Pre-Medical, Pre-Engineering, ICS, ICOM and F.A, with FBISE.",
+    "keywords": ["intermediate", "fsc", "f.sc", "ics", "icom", "i.com", "fa", "pre-medical", "pre medical", "pre-engineering", "hssc", "class 11", "class 12", "college"],
+    "campus": "all" },
+
+  { "q": "Which board are Matric and Intermediate affiliated with?",
+    "a": "Matric (SSC) and Intermediate (HSSC) are with the Federal Board of Intermediate and Secondary Education (FBISE).",
+    "keywords": ["board", "fbise", "federal board", "matric", "ssc", "affiliation", "affiliated"],
+    "campus": "all", "topic": "programs" },
+
+  { "q": "What special programs are offered?",
+    "a": "SKANS campuses run special programs such as STEM, robotics, coding, competitions and leadership activities. Each campus shows its own programs.",
+    "keywords": ["special", "robotics", "stem", "coding", "python", "olympiad", "imo", "competition", "activities", "extra"],
+    "campus": "all", "topic": "special" },
+
+  { "q": "What facilities does the campus have?",
+    "a": "The Facilities page shows the campus facilities and co-curricular activities.",
+    "keywords": ["facilities", "lab", "library", "computer lab", "playground", "smart board", "sports", "taekwondo"],
+    "campus": "all", "topic": "facilities" },
+
+  { "q": "Who are the teachers?",
+    "a": "The Faculty page shows the leadership team and teachers of the campus.",
+    "keywords": ["teacher", "teachers", "faculty", "staff", "principal", "coordinator"],
+    "campus": "all", "topic": "faculty" },
+
+  { "q": "What are the latest news and events?",
+    "a": "The News & Events page shows the latest announcements, news and events of the campus.",
+    "keywords": ["news", "events", "event", "announcement", "announcements", "holiday", "notice", "result"],
+    "campus": "all", "topic": "news" },
+
+  { "q": "School timings, transport and uniform",
+    "a": "Please contact the campus office for timings, transport and uniform details. They will be happy to help.",
+    "keywords": ["timing", "timings", "time", "hours", "transport", "van", "bus", "pick", "drop", "uniform", "dress", "books", "stationery"],
+    "campus": "all", "topic": "contact" },
+
+  { "q": "Can I visit the campus?",
+    "a": "Yes, you are welcome. Please call or WhatsApp the campus to arrange a visit and a meeting with the Principal.",
+    "keywords": ["visit", "tour", "see the school", "meet", "meeting", "appointment"],
+    "campus": "all", "topic": "contact" },
+
+  { "q": "Where is the campus and how can I contact it?",
+    "a": "The Contact page has the address, map, phone numbers and email of the campus.",
+    "keywords": ["address", "location", "where", "map", "contact", "phone", "number", "email", "call", "whatsapp"],
+    "campus": "all", "topic": "contact" },
+
+  { "q": "Where can I read the SKANS policies?",
+    "a": "The SKANS Policies page has the admission, fee and attendance rules and the harassment policy.",
+    "keywords": ["policy", "policies", "rules", "harassment", "code of conduct"],
+    "campus": "all", "topic": "policies" },
+
+  { "q": "Are there any job vacancies?",
+    "a": "Teachers and staff can send their CV to hr@skans.pk, with the job title in the subject line.",
+    "keywords": ["job", "jobs", "vacancy", "vacancies", "career", "careers", "cv", "hiring", "teach", "work"],
+    "campus": "all", "link": "mailto:hr@skans.pk", "linkText": "Email hr@skans.pk" }
+];
+</script>
+<script data-container="#stage" data-open="true">/* SKANS chatbot: buttons, links and fixed answers (no AI, no server code).
+ * Add to any page, before </body>:
+ *   <script src="https://skansschool.edu.pk/chatbot/chatbot.js?v=2" defer><\/script>
+ * Optional attributes on that tag:
+ *   data-campus="golra"      force a campus (normally found automatically from the web address)
+ *   data-position="right"    put the button on the right (default: left, so it never covers WhatsApp)
+ *   data-container="#id"     show the chat inside an element instead of the page corner (demo pages)
+ *   data-open="true"         open the chat as soon as the page loads (demo pages)
+ * Data: campuses.js and faq.js in the same folder. Edit those, not this file.
+ */
+(function () {
+  'use strict';
+  if (window.SKANS_CHAT_LOADED) return;
+  window.SKANS_CHAT_LOADED = true;
+
+  var me = document.currentScript || (function () {
+    var s = document.querySelectorAll('script[src*="chatbot.js"]'); return s[s.length - 1] || document.createElement('script');
+  })();
+  var src = me.src || '';
+  var base = src.replace(/[^\/]*$/, '');                     // folder of chatbot.js
+  var ver = (src.split('?')[1] || '');
+  var forced = me.getAttribute('data-campus') || '';
+  var side = me.getAttribute('data-position') === 'right' ? 'right' : 'left';
+  var container = me.getAttribute('data-container') ? document.querySelector(me.getAttribute('data-container')) : null;
+  var autoOpen = me.getAttribute('data-open') === 'true';
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var TOPICS = [
+    { key: 'fees',       label: 'Fee Structure',               icon: '💰', page: 'fee-structure.php' },
+    { key: 'admissions', label: 'Admissions & age guide',      icon: '📝', page: 'admissions.php' },
+    { key: 'policy',     label: 'Admission Policy',            icon: '📋', page: 'admission-policy.php' },
+    { key: 'programs',   label: 'Programs & classes',          icon: '🎓', page: 'departments.php' },
+    { key: 'special',    label: 'Special Programs',            icon: '🤖', page: 'advanced-placement-program.php' },
+    { key: 'facilities', label: 'Facilities',                  icon: '🏫', page: 'services.php' },
+    { key: 'faculty',    label: 'Faculty',                     icon: '👩‍🏫', page: 'faculty.php' },
+    { key: 'news',       label: 'News & Events',               icon: '📰', page: 'news-events.php' },
+    { key: 'about',      label: 'About & Principal’s message', icon: '🏛️', page: 'about.php' },
+    { key: 'contact',    label: 'Location & contact',          icon: '📍', page: 'contact-us.php' },
+    { key: 'policies',   label: 'SKANS Policies',              icon: '📄', page: 'policies.php' }
+  ];
+  var MENU = ['fees', 'admissions', 'programs', 'facilities', 'faculty', 'news', 'contact'];   // topic cards
+
+  /* ---------- load style + data (skipped when the page already has them, e.g. a one-file demo) ---------- */
+  function load(file, done) {
+    var s = document.createElement('script');
+    s.src = base + file + (ver ? '?' + ver : ''); s.async = true;
+    s.onload = done; s.onerror = done;
+    document.head.appendChild(s);
+  }
+  if (!document.querySelector('style[data-skc], link[data-skc]') && base) {
+    var css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = base + 'chatbot.css' + (ver ? '?' + ver : ''); css.setAttribute('data-skc', '');
+    document.head.appendChild(css);
+  }
+  var pending = 1;
+  function ready() { if (--pending === 0) start(); }
+  if (!window.SKANS_CHAT_CAMPUSES && base) { pending++; load('campuses.js', ready); }
+  if (!window.SKANS_CHAT_FAQ && base) { pending++; load('faq.js', ready); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else setTimeout(ready, 0);
+
+  /* ---------- helpers ---------- */
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function store(k, v, session) {
+    try { var s = session ? sessionStorage : localStorage; if (v === undefined) return s.getItem(k); s.setItem(k, v); } catch (e) { return null; }
+  }
+  function host(u) { try { return new URL(u, location.href).hostname.replace(/^www\./, '').toLowerCase(); } catch (e) { return ''; } }
+  function topic(key) { for (var i = 0; i < TOPICS.length; i++) if (TOPICS[i].key === key) return TOPICS[i]; return null; }
+  function pageUrl(c, key) {
+    var t = topic(key); if (!c || !t) return '';
+    return c.url.replace(/\/?$/, '/') + ((c.pages && c.pages[key]) || t.page);
+  }
+  var AVATAR = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#192A4A"/><circle cx="20" cy="20" r="16.5" fill="none" stroke="#BD852C" stroke-width="1.6"/><text x="20" y="26.5" text-anchor="middle" font-family="Times New Roman, Times, serif" font-size="18" font-weight="700" fill="#fff">S</text></svg>';
+  var SEND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>';
+
+  var campuses = [], faq = [], campus = null, onCampusSite = false;
+  var root, launcher, nudge, box, log, input, opened = false;
+
+  function start() {
+    campuses = window.SKANS_CHAT_CAMPUSES || [];
+    faq = window.SKANS_CHAT_FAQ || [];
+    if (!campuses.length || !document.body) return;          // data missing: show nothing rather than a broken bot
+    var here = host(location.href);
+    campus = find(forced) || campuses.filter(function (c) { return host(c.url) === here; })[0] || null;
+    onCampusSite = !!campus;
+    if (!campus) campus = find(store('skans_chat_campus'));
+    build();
+    if (autoOpen) toggle(true);
+    else if (store('skans_chat_hello', undefined, true) !== 'seen') setTimeout(showNudge, 2500);
+  }
+  function find(id) { for (var i = 0; i < campuses.length; i++) if (campuses[i].id === id) return campuses[i]; return null; }
+
+  /* ---------- layout ---------- */
+  function build() {
+    root = el('div', 'skc-root skc-' + side + (container ? ' skc-contained' : ''));
+
+    launcher = el('button', 'skc-launch');
+    launcher.type = 'button';
+    launcher.setAttribute('aria-label', 'Open SKANS help chat');
+    launcher.setAttribute('aria-expanded', 'false');
+    launcher.innerHTML = '<span class="skc-launch-face">' + AVATAR + '</span><span class="skc-wave" aria-hidden="true">👋</span>';
+
+    nudge = el('div', 'skc-nudge'); nudge.hidden = true; nudge.setAttribute('role', 'status');
+    var nudgeText = el('button', 'skc-nudge-text'); nudgeText.type = 'button';
+    nudgeText.appendChild(el('strong', null, 'Hi there! 👋'));
+    nudgeText.appendChild(el('span', null, onCampusSite ? 'Questions about ' + campus.name + '? Ask me.' : 'Need help with admissions or fees?'));
+    var nudgeClose = el('button', 'skc-nudge-x', '×'); nudgeClose.type = 'button'; nudgeClose.setAttribute('aria-label', 'Dismiss');
+    nudge.appendChild(nudgeText); nudge.appendChild(nudgeClose);
+
+    box = el('section', 'skc-box');
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'SKANS help'); box.hidden = true;
+    var head = el('header', 'skc-head');
+    var who = el('div', 'skc-who');
+    var av = el('span', 'skc-avatar'); av.innerHTML = AVATAR;
+    var title = el('div', 'skc-title');
+    title.appendChild(el('strong', null, 'SKANS Help'));
+    var sub = el('span', 'skc-sub'); sub.appendChild(el('i', 'skc-dot')); sub.appendChild(document.createTextNode('Instant answers · Mon–Sat'));
+    title.appendChild(sub);
+    who.appendChild(av); who.appendChild(title);
+    var close = el('button', 'skc-close'); close.type = 'button'; close.setAttribute('aria-label', 'Close chat');
+    close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+    head.appendChild(who); head.appendChild(close);
+
+    log = el('div', 'skc-log'); log.setAttribute('aria-live', 'polite');
+    var form = el('form', 'skc-form');
+    input = el('input'); input.type = 'text'; input.id = 'skc-question'; input.placeholder = 'Type a question, e.g. fees';
+    input.setAttribute('aria-label', 'Your question'); input.maxLength = 120; input.autocomplete = 'off';
+    var send = el('button', 'skc-send'); send.type = 'submit'; send.setAttribute('aria-label', 'Send'); send.innerHTML = SEND;
+    form.appendChild(input); form.appendChild(send);
+    var foot = el('p', 'skc-foot', 'SKANS School System · answers from our websites');
+    box.appendChild(head); box.appendChild(log); box.appendChild(form); box.appendChild(foot);
+
+    root.appendChild(nudge); root.appendChild(launcher); root.appendChild(box);
+    (container || document.body).appendChild(root);
+
+    launcher.addEventListener('click', function () { toggle(true); });
+    nudgeText.addEventListener('click', function () { toggle(true); });
+    nudgeClose.addEventListener('click', function () { hideNudge(); });
+    close.addEventListener('click', function () { toggle(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && opened) toggle(false); });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var q = input.value.trim(); if (!q) return;
+      input.value = ''; user(q); search(q);
+    });
+  }
+  function showNudge() { if (!opened && nudge) { nudge.hidden = false; requestAnimationFrame(function () { nudge.classList.add('skc-in'); }); } }
+  function hideNudge() { if (nudge) { nudge.hidden = true; nudge.classList.remove('skc-in'); } store('skans_chat_hello', 'seen', true); }
+  function toggle(open) {
+    opened = open;
+    box.hidden = !open; launcher.hidden = open;
+    launcher.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      hideNudge();
+      if (!log.childNodes.length) welcome();
+      setTimeout(function () { try { input.focus({ preventScroll: true }); } catch (e) {} }, 60);
+    } else { try { launcher.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  /* ---------- message queue: a short "typing" pause before each reply ---------- */
+  var queue = [], busy = false, gen = 0;
+  function push(job) { queue.push(job); if (!busy) next(); }
+  function next() {
+    var job = queue.shift(); if (!job) { busy = false; return; }
+    busy = true;
+    if (job.typing && !calm) {
+      var t = typingRow(), g = gen; log.appendChild(t); scroll();
+      setTimeout(function () { if (g !== gen) return; t.remove(); job.run(); scroll(); next(); }, job.wait || 420);
+    } else { job.run(); scroll(); next(); }
+  }
+  function typingRow() {
+    var r = el('div', 'skc-row skc-row-bot');
+    var a = el('span', 'skc-mini'); a.innerHTML = AVATAR;
+    var b = el('div', 'skc-msg skc-bot skc-typing'); b.setAttribute('aria-label', 'typing');
+    b.appendChild(el('i')); b.appendChild(el('i')); b.appendChild(el('i'));
+    r.appendChild(a); r.appendChild(b); return r;
+  }
+  function scroll() { log.scrollTop = log.scrollHeight; }
+
+  function user(text) {
+    push({ run: function () { var r = el('div', 'skc-row skc-row-user'); r.appendChild(el('div', 'skc-msg skc-user', text)); log.appendChild(r); } });
+  }
+  /* bot(text, buttons, links, style): style "cards" = topic grid, "list" = full-width rows */
+  function bot(text, buttons, links, style) {
+    push({ typing: true, run: function () {
+      var r = el('div', 'skc-row skc-row-bot');
+      var a = el('span', 'skc-mini'); a.innerHTML = AVATAR;
+      var m = el('div', 'skc-msg skc-bot');
+      String(text).split('\n').forEach(function (line, i) { if (i) m.appendChild(el('br')); m.appendChild(document.createTextNode(line)); });
+      r.appendChild(a); r.appendChild(m); log.appendChild(r);
+      if ((links && links.length) || (buttons && buttons.length)) {
+        var row = el('div', 'skc-actions' + (style ? ' skc-' + style : ''));
+        (links || []).forEach(function (l) {
+          if (!l || !l.href) return;
+          var x = el('a', 'skc-link' + (l.cls ? ' ' + l.cls : ''));
+          if (l.icon) x.appendChild(el('span', 'skc-ic', l.icon));
+          x.appendChild(document.createTextNode(l.label)); x.href = l.href;
+          if (/^https?:/.test(l.href) && host(l.href) !== host(location.href)) { x.target = '_blank'; x.rel = 'noopener'; }
+          row.appendChild(x);
+        });
+        (buttons || []).forEach(function (b) {
+          var x = el('button', 'skc-btn' + (b.cls ? ' ' + b.cls : '')); x.type = 'button';
+          if (b.icon) x.appendChild(el('span', 'skc-ic', b.icon));
+          var lab = el('span', 'skc-lab'); lab.appendChild(el('span', 'skc-t', b.label));
+          if (b.note) lab.appendChild(el('span', 'skc-note', b.note));
+          x.appendChild(lab);
+          x.addEventListener('click', function () { user((b.icon ? b.icon + ' ' : '') + b.label); b.go(); });
+          row.appendChild(x);
+        });
+        log.appendChild(row);
+      }
+    } });
+  }
+  function helpLinks() {
+    var l = [];
+    if (campus && campus.whatsapp) l.push({ label: 'WhatsApp', icon: '💬', href: 'https://wa.me/' + campus.whatsapp, cls: 'skc-wa' });
+    if (campus && campus.tel) l.push({ label: 'Call ' + campus.phone, icon: '📞', href: 'tel:' + campus.tel, cls: 'skc-call' });
+    if (campus && !campus.whatsapp && !campus.tel) l.push({ label: 'Contact ' + campus.name, icon: '📍', href: pageUrl(campus, 'contact') });
+    return l;
+  }
+  function backButtons() {
+    return [{ label: 'Main menu', icon: '☰', go: menu, cls: 'skc-quiet' }, { label: 'Common questions', icon: '❓', go: questions, cls: 'skc-quiet' }];
+  }
+
+  /* ---------- flows ---------- */
+  function welcome() {
+    if (campus) {
+      bot('Assalam o Alaikum! 👋 Welcome to SKANS ' + campus.name + '. How can we help you today?');
+      menu();
+    } else {
+      bot('Assalam o Alaikum! 👋 Welcome to SKANS School System. Which campus are you interested in?');
+      pickCampus(true);
+    }
+  }
+  function pickCampus(quiet) {
+    if (!quiet) bot('Which campus would you like to know about?');
+    bot('Choose a campus:', campuses.map(function (c) {
+      return { label: c.name, note: c.classes || '', icon: '🏫', go: function () {
+        campus = c; store('skans_chat_campus', c.id);
+        bot('Great choice: ' + c.name + '. What would you like to know?'); menu(true); } };
+    }), null, 'list');
+  }
+  function menu(quiet) {
+    if (!campus) return pickCampus();
+    var b = MENU.map(function (k) { var t = topic(k); return { label: t.label, icon: t.icon, go: function () { openTopic(k); } }; });
+    b.push({ label: 'Common questions', icon: '❓', go: questions });
+    bot(quiet === true ? 'Pick a topic:' : 'Choose a topic for ' + campus.name + ':', b, null, 'cards');
+    bot('Looking for another campus?', [{ label: 'Change campus', icon: '🔁', go: function () { pickCampus(); }, cls: 'skc-quiet' }]);
+  }
+  function openTopic(key) {
+    if (!campus) return pickCampus();
+    var t = topic(key);
+    var links = [{ label: 'Open ' + t.label, icon: '↗', href: pageUrl(campus, key), cls: 'skc-main' }];
+    if (key === 'contact') links = links.concat(helpLinks());
+    bot(t.label + ' of ' + campus.name + ': tap below to open the page.', backButtons(), links);
+  }
+  function relevant() {
+    return faq.filter(function (f) { return !f.campus || f.campus === 'all' || (campus && f.campus === campus.id); });
+  }
+  function questions() {
+    bot('Here are the questions parents ask most:', relevant().map(function (f) { return { label: f.q, go: function () { answer(f); } }; })
+      .concat([{ label: 'Main menu', icon: '☰', go: menu, cls: 'skc-quiet' }]), null, 'list');
+  }
+  function answer(f) {
+    if (f.topic && !campus) {
+      bot(f.a);
+      bot('Which campus? I will show you the right page.', campuses.map(function (c) {
+        return { label: c.name, note: c.classes || '', icon: '🏫', go: function () { campus = c; store('skans_chat_campus', c.id); answer(f); } };
+      }), null, 'list');
+      return;
+    }
+    var links = [];
+    if (f.topic && campus) { var t = topic(f.topic); if (t) links.push({ label: 'Open ' + t.label, icon: '↗', href: pageUrl(campus, f.topic), cls: 'skc-main' }); }
+    if (f.link) links.push({ label: f.linkText || 'Open', icon: '↗', href: f.link, cls: 'skc-main' });
+    bot(f.a, backButtons(), links.concat(helpLinks()));
+  }
+
+  /* ---------- search (keywords) ---------- */
+  function words(s) { return String(s).toLowerCase().replace(/[^a-z0-9\s\-\.\/%]/g, ' ').split(/\s+/).filter(Boolean); }
+  function search(q) {
+    var text = ' ' + words(q).join(' ') + ' ';
+    // a campus name typed: switch to it
+    var named = campuses.filter(function (c) { var n = c.name.toLowerCase().replace(' campus', ''); return text.indexOf(n) >= 0 || text.indexOf(' ' + c.id + ' ') >= 0; })[0];
+    if (named && (!campus || named.id !== campus.id)) { campus = named; store('skans_chat_campus', named.id); bot('Showing answers for ' + named.name + '.'); }
+
+    var scored = relevant().map(function (f) {
+      var score = 0;
+      (f.keywords || []).forEach(function (k) { k = String(k).toLowerCase(); if (text.indexOf(' ' + k + ' ') >= 0 || (k.length > 4 && text.indexOf(k) >= 0)) score += k.split(' ').length + 1; });
+      words(f.q).forEach(function (w) { if (w.length > 3 && text.indexOf(' ' + w + ' ') >= 0) score += 0.5; });
+      return { f: f, score: score };
+    }).filter(function (x) { return x.score >= 1; }).sort(function (a, b) { return b.score - a.score; });
+
+    if (!scored.length) {
+      bot('Sorry, I don’t have an answer for that yet. Please choose a topic, or message the campus directly.', backButtons(), helpLinks());
+      return;
+    }
+    if (scored.length === 1 || scored[0].score >= scored[1].score + 2) return answer(scored[0].f);
+    bot('Did you mean:', scored.slice(0, 3).map(function (x) { return { label: x.f.q, go: function () { answer(x.f); } }; })
+      .concat([{ label: 'Main menu', icon: '☰', go: menu, cls: 'skc-quiet' }]), null, 'list');
+  }
+
+  /* ---------- for demo pages: switch campus and restart ---------- */
+  window.SKANS_CHAT = {
+    restart: function (campusId) {
+      if (!root) return;
+      gen++; queue = []; busy = false; log.innerHTML = '';
+      campus = find(campusId) || null; onCampusSite = !!campus;
+      if (opened) welcome(); else toggle(true);
+    },
+    open: function () { if (root) toggle(true); }
+  };
+})();
+</script>
 <script>
-var CAMPUSES = [{"id":"aechs","name":"AECHS Campus","url":"https://aechscampus.skansschool.edu.pk/","classes":"Playgroup – Matric","phone":"+92 51 8468475","tel":"+92518468475","whatsapp":"923335352965"},{"id":"pwd","name":"PWD Campus","url":"https://pwdcampus.skansschool.edu.pk/","classes":"Playgroup – Class 8","phone":"+92 51 8773775","tel":"+92518773775","whatsapp":"923315354843"},{"id":"chakri","name":"Chakri Road Campus","url":"https://chakricampus.skansschool.edu.pk/","classes":"","phone":"+92 51 5575082","tel":"+92515575082","whatsapp":"923359483369"},{"id":"harley","name":"Harley Street Campus","url":"https://hscampus.skansschool.edu.pk/","classes":"Playgroup – Matric","phone":"+92 51 5176066","tel":"+92515176066","whatsapp":"923328922225"},{"id":"golra","name":"Golra Junior Campus","url":"https://golrajuniorcampus.skansschool.edu.pk/","classes":"Playgroup – Class 5","phone":"+92 51 2227475","tel":"+92512227475","whatsapp":"923205005858"},{"id":"golrasr","name":"Golra Senior Campus","url":"https://golraseniorcampus.skansschool.edu.pk/","classes":"Class 6 – A Level","phone":"+92 51 2229454","tel":"+92512229454","whatsapp":"923467845010"},{"id":"westridgesr","name":"Westridge Senior Campus","url":"https://westridgeseniorcampus.skansschool.edu.pk/","classes":"Class 3 – Matric / O Level","phone":"+92 51 8355546","tel":"+92518355546","whatsapp":"923345359458","pages":{"fees":"admissions.php","policy":"admissions.php"}},{"id":"westridgejr","name":"Westridge Junior Campus","url":"https://westridgejuniorcampus.skansschool.edu.pk/","classes":"","phone":"+92 51 8773091","tel":"+92518773091","whatsapp":"923005070778","pages":{"fees":"admissions.php","policy":"admissions.php"}},{"id":"westridgeeye","name":"Westridge EYE Campus","url":"https://westridgeeyecampus.skansschool.edu.pk/","classes":"","phone":"","tel":"","whatsapp":"","pages":{"fees":"admissions.php","policy":"admissions.php"}}];
-var FAQ = [{"q":"How can I apply for admission?","a":"1. Meet the Principal at the campus.\n2. Pay the registration fee at the admin and accounts office.\n3. Fill in the admission form.\n4. Your child takes the admission test and interview.\n5. The Principal approves the admission.","keywords":["apply","admission","admit","enrol","enroll","join","register","registration","procedure","process"],"campus":"all","topic":"admissions"},{"q":"Which documents are required for admission?","a":"• School leaving certificate and progress report of the previous school\n• Copy of Birth Certificate / NADRA B-Form (mandatory)\n• Copy of father’s CNIC (mandatory)\n• Two passport-size photographs of the child","keywords":["document","documents","papers","b-form","bform","birth certificate","cnic","photo","photographs","leaving certificate"],"campus":"all","topic":"policy"},{"q":"Is there an admission test?","a":"Yes. Admission is given on merit, after the admission test and an interview. The school management decides on every admission.","keywords":["test","entry test","interview","merit","exam for admission"],"campus":"all","topic":"admissions"},{"q":"What is the minimum age for each class?","a":"Each campus shows its age guide on the Admissions page, class by class.","keywords":["age","minimum age","age limit","how old","years old","playgroup age","nursery age"],"campus":"all","topic":"admissions"},{"q":"What are the fees?","a":"Fees differ by campus and by class. The Fee Structure page shows the registration, admission, security, annual and monthly tuition fees.","keywords":["fee","fees","tuition","charges","cost","price","how much","monthly fee","fee structure"],"campus":"all","topic":"fees"},{"q":"What do I pay at the time of admission?","a":"The first payment is made in advance and includes the admission fee, security fee, registration fee and one month’s tuition fee.","keywords":["first payment","at admission","admission fee","security fee","registration fee","advance"],"campus":"all","topic":"fees"},{"q":"When is the monthly fee due?","a":"The monthly tuition fee must be paid by the 10th of every month. After that a late fine is charged.\nIf it is still unpaid, notices are sent on the 11th, 20th and 26th, and the student’s name is struck off by the 10th of the following month.","keywords":["due date","last date","10th","late fee","fine","penalty","fee date","when to pay"],"campus":"all","topic":"policy"},{"q":"How can I pay the fee?","a":"All fees are paid in the bank or online. The school accounts office does not accept cash.","keywords":["pay","payment","bank","online","cash","challan","deposit"],"campus":"all","topic":"policy"},{"q":"Is there an annual fee?","a":"Yes. Annual charges are paid in addition to the monthly tuition fee. Fee increases apply when approved by the school management.","keywords":["annual","annual charges","yearly","resource charges","increase"],"campus":"all","topic":"fees"},{"q":"Is the security fee refunded?","a":"The security fee is refunded when the student leaves, after all school dues are cleared. Please request the school leaving certificate and refund one month in advance; with shorter notice, one month’s fee is adjusted from the security.","keywords":["security","refund","refundable","deposit back","return"],"campus":"all","topic":"policy"},{"q":"How do I get a school leaving certificate?","a":"Submit a request to the campus office one month in advance. The certificate is issued after all school dues are cleared.","keywords":["leaving certificate","slc","leave school","withdraw","transfer","migration"],"campus":"all","topic":"policy"},{"q":"What is the attendance requirement?","a":"Students need at least 90% attendance to sit the annual exams. A student absent for more than 15 days may have their name struck off.","keywords":["attendance","absent","absence","leave","90%","struck off"],"campus":"all","topic":"policy"},{"q":"Which classes does each campus offer?","a":"Each campus has its own classes. Choose a campus to see its programs, or look at the list of campuses.","keywords":["classes","class","grades","levels","which class","programs","sections"],"campus":"all","topic":"programs"},{"q":"Which campus offers O Level, A Level or IGCSE?","a":"Golra Senior Campus offers IGCSE and O / A Level (Class 6 to A Level).\nWestridge Senior Campus offers IGCSE / O Level with Oxford AQA alongside Matric.","keywords":["o level","a level","o-level","a-level","igcse","cambridge","oxford aqa","aqa","international"],"campus":"all"},{"q":"Which campus offers Intermediate (FSc, ICS, ICOM)?","a":"Golra Senior Campus offers Intermediate (Class 11 and 12): Pre-Medical, Pre-Engineering, ICS, ICOM and F.A, with FBISE.","keywords":["intermediate","fsc","f.sc","ics","icom","i.com","fa","pre-medical","pre medical","pre-engineering","hssc","class 11","class 12","college"],"campus":"all"},{"q":"Which board are Matric and Intermediate affiliated with?","a":"Matric (SSC) and Intermediate (HSSC) are with the Federal Board of Intermediate and Secondary Education (FBISE).","keywords":["board","fbise","federal board","matric","ssc","affiliation","affiliated"],"campus":"all","topic":"programs"},{"q":"What special programs are offered?","a":"SKANS campuses run special programs such as STEM, robotics, coding, competitions and leadership activities. Each campus shows its own programs.","keywords":["special","robotics","stem","coding","python","olympiad","imo","competition","activities","extra"],"campus":"all","topic":"special"},{"q":"What facilities does the campus have?","a":"The Facilities page shows the campus facilities and co-curricular activities.","keywords":["facilities","lab","library","computer lab","playground","smart board","sports","taekwondo"],"campus":"all","topic":"facilities"},{"q":"Who are the teachers?","a":"The Faculty page shows the leadership team and teachers of the campus.","keywords":["teacher","teachers","faculty","staff","principal","coordinator"],"campus":"all","topic":"faculty"},{"q":"What are the latest news and events?","a":"The News & Events page shows the latest announcements, news and events of the campus.","keywords":["news","events","event","announcement","announcements","holiday","notice","result"],"campus":"all","topic":"news"},{"q":"School timings, transport and uniform","a":"Please contact the campus office for timings, transport and uniform details. They will be happy to help.","keywords":["timing","timings","time","hours","transport","van","bus","pick","drop","uniform","dress","books","stationery"],"campus":"all","topic":"contact"},{"q":"Can I visit the campus?","a":"Yes, you are welcome. Please call or WhatsApp the campus to arrange a visit and a meeting with the Principal.","keywords":["visit","tour","see the school","meet","meeting","appointment"],"campus":"all","topic":"contact"},{"q":"Where is the campus and how can I contact it?","a":"The Contact page has the address, map, phone numbers and email of the campus.","keywords":["address","location","where","map","contact","phone","number","email","call","whatsapp"],"campus":"all","topic":"contact"},{"q":"Where can I read the SKANS policies?","a":"The SKANS Policies page has the admission, fee and attendance rules and the harassment policy.","keywords":["policy","policies","rules","harassment","code of conduct"],"campus":"all","topic":"policies"},{"q":"Are there any job vacancies?","a":"Teachers and staff can send their CV to hr@skans.pk, with the job title in the subject line.","keywords":["job","jobs","vacancy","vacancies","career","careers","cv","hiring","teach","work"],"campus":"all","link":"mailto:hr@skans.pk","linkText":"Email hr@skans.pk"}];
+var CAMPUSES = window.SKANS_CHAT_CAMPUSES;
+var FAQ = window.SKANS_CHAT_FAQ;
 var TOPICS = [
   { key: 'fees', label: 'Fee Structure', icon: '💰', page: 'fee-structure.php' },
   { key: 'admissions', label: 'Admissions & age guide', icon: '📝', page: 'admissions.php' },
@@ -234,7 +861,7 @@ function renderSite() {
   if (mode === 'main') {
     $('url').textContent = 'https://skansschool.edu.pk/';
     site.innerHTML = '<div class="m-head"><div class="m-logo">SKANS<small>School System · Education for life</small></div><nav class="m-nav"><span>Home</span><span>About</span><span>Campuses</span><span>Programs</span><span>Our Portals</span></nav></div>' +
-      '<div class="m-hero"><h2>One school system, nine campuses</h2><p>Rawalpindi and Islamabad. Choose a campus to visit its website, or ask the Help chat.</p></div><div class="m-grid" id="mgrid"></div>';
+      '<div class="m-hero"><h2>One school system, nine campuses</h2><p>Rawalpindi and Islamabad. Choose a campus to visit its website, or ask the SKANS chat (bottom left).</p></div><div class="m-grid" id="mgrid"></div>';
     CAMPUSES.forEach(function (c) { var d = el('div', 'm-card'); d.appendChild(el('strong', null, c.name)); d.appendChild(el('span', null, c.classes || hostOf(c.url))); $('mgrid').appendChild(d); });
   } else {
     var c = CAMPUSES.filter(function (x) { return x.id === current; })[0];
@@ -243,96 +870,14 @@ function renderSite() {
       '<div class="c-hero"><span class="eyebrow"></span><h2>Empowering Minds, Inspiring Futures</h2><p></p><span class="c-wa" aria-hidden="true">WA</span></div>';
     var camp = site.querySelector('.c-camp'); camp.textContent = c.name; var sm = el('small', null, c.classes || ''); camp.appendChild(sm);
     site.querySelector('.c-hero .eyebrow').textContent = 'SKANS School System · ' + c.name;
-    site.querySelector('.c-hero p').textContent = 'Welcome to SKANS ' + c.name + '. The Help button at the bottom-left already knows this campus.';
+    site.querySelector('.c-hero p').textContent = 'Welcome to SKANS ' + c.name + '. The SKANS chat (bottom left) already knows this campus.';
   }
-  resetBot();
+  if (window.SKANS_CHAT) window.SKANS_CHAT.restart(mode === 'campus' ? current : null);
 }
 function setMode(m) { mode = m; $('btn-main').setAttribute('aria-pressed', m === 'main'); $('btn-campus').setAttribute('aria-pressed', m === 'campus'); renderSite(); }
 $('btn-main').addEventListener('click', function () { setMode('main'); });
 $('btn-campus').addEventListener('click', function () { setMode('campus'); });
 $('campus-pick').addEventListener('change', function () { current = this.value; setMode('campus'); });
-
-/* ---------- the bot (same behaviour as chatbot.js) ---------- */
-var campus = null, opened = false, log = $('log');
-function resetBot() {
-  log.innerHTML = ''; campus = mode === 'campus' ? CAMPUSES.filter(function (x) { return x.id === current; })[0] : null;
-  if (opened) welcome();
-}
-function toggle(open) {
-  opened = open; $('box').hidden = !open; $('launch').hidden = open; $('note').hidden = true;
-  $('launch').setAttribute('aria-expanded', open ? 'true' : 'false');
-  if (open && !log.childNodes.length) welcome();
-  if (open) setTimeout(function () { $('q').focus({ preventScroll: true }); }, 50); else $('launch').focus({ preventScroll: true });
-}
-$('launch').addEventListener('click', function () { toggle(true); });
-$('close').addEventListener('click', function () { toggle(false); });
-document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && opened) toggle(false); });
-$('form').addEventListener('submit', function (e) { e.preventDefault(); var q = $('q').value.trim(); if (!q) return; $('q').value = ''; user(q); search(q); });
-
-function scroll() { log.scrollTop = log.scrollHeight; }
-function user(t) { log.appendChild(el('div', 'skc-msg skc-user', t)); scroll(); }
-function bot(text, buttons, links) {
-  var m = el('div', 'skc-msg skc-bot');
-  String(text).split('\n').forEach(function (line, i) { if (i) m.appendChild(el('br')); m.appendChild(document.createTextNode(line)); });
-  log.appendChild(m);
-  if ((links && links.length) || (buttons && buttons.length)) {
-    var row = el('div', 'skc-actions');
-    (links || []).forEach(function (l) { if (!l || !l.href) return; var a = el('a', 'skc-link' + (l.cls ? ' ' + l.cls : ''), l.label); a.href = l.href; a.target = '_blank'; a.rel = 'noopener'; row.appendChild(a); });
-    (buttons || []).forEach(function (b) { var x = el('button', 'skc-btn' + (b.cls ? ' ' + b.cls : ''), b.label); x.type = 'button'; x.addEventListener('click', function () { user(b.label); b.go(); }); row.appendChild(x); });
-    log.appendChild(row);
-  }
-  scroll();
-}
-function helpLinks() {
-  var l = [];
-  if (campus && campus.whatsapp) l.push({ label: 'WhatsApp ' + campus.name, href: 'https://wa.me/' + campus.whatsapp, cls: 'skc-wa' });
-  if (campus && campus.tel) l.push({ label: 'Call ' + campus.phone, href: 'tel:' + campus.tel });
-  if (campus && !campus.whatsapp && !campus.tel) l.push({ label: 'Contact ' + campus.name, href: pageUrl(campus, 'contact') });
-  return l;
-}
-function back() { return [{ label: '☰ Main menu', go: menu, cls: 'skc-quiet' }, { label: '❓ Common questions', go: questions, cls: 'skc-quiet' }]; }
-function welcome() {
-  if (campus) { bot('Assalam o Alaikum! Welcome to SKANS ' + campus.name + '. How can we help you today?'); menu(); }
-  else { bot('Assalam o Alaikum! Welcome to SKANS School System. Which campus are you interested in?'); pick(); }
-}
-function pick() {
-  bot('Choose a campus:', CAMPUSES.map(function (c) { return { label: c.name + (c.classes ? ' · ' + c.classes : ''), cls: 'skc-campus', go: function () { campus = c; bot('Great, ' + c.name + '. What would you like to know?'); menu(); } }; }));
-}
-function menu() {
-  if (!campus) return pick();
-  var b = MENU.map(function (k) { var t = topic(k); return { label: t.icon + ' ' + t.label, go: function () { openTopic(k); } }; });
-  b.push({ label: '❓ Common questions', go: questions }); b.push({ label: '🔁 Change campus', go: pick, cls: 'skc-quiet' });
-  bot('Choose a topic for ' + campus.name + ':', b);
-}
-function openTopic(k) {
-  var t = topic(k); var links = [{ label: 'Open ' + t.label, href: pageUrl(campus, k), cls: 'skc-main' }];
-  if (k === 'contact') links = links.concat(helpLinks());
-  bot(t.label + ' of ' + campus.name + ':', back(), links);
-}
-function relevant() { return FAQ.filter(function (f) { return !f.campus || f.campus === 'all' || (campus && f.campus === campus.id); }); }
-function questions() { bot('Common questions:', relevant().map(function (f) { return { label: f.q, cls: 'skc-q', go: function () { answer(f); } }; }).concat([{ label: '☰ Main menu', go: menu, cls: 'skc-quiet' }])); }
-function answer(f) {
-  if (f.topic && !campus) { bot(f.a); bot('Which campus? I will show you the right page.', CAMPUSES.map(function (c) { return { label: c.name, cls: 'skc-campus', go: function () { campus = c; answer(f); } }; })); return; }
-  var links = [];
-  if (f.topic && campus) { var t = topic(f.topic); if (t) links.push({ label: 'Open ' + t.label + ' – ' + campus.name, href: pageUrl(campus, f.topic), cls: 'skc-main' }); }
-  if (f.link) links.push({ label: f.linkText || 'Open', href: f.link, cls: 'skc-main' });
-  bot(f.a, back(), links.concat(helpLinks()));
-}
-function words(s) { return String(s).toLowerCase().replace(/[^a-z0-9\s\-\.\/%]/g, ' ').split(/\s+/).filter(Boolean); }
-function search(q) {
-  var text = ' ' + words(q).join(' ') + ' ';
-  var named = CAMPUSES.filter(function (c) { var n = c.name.toLowerCase().replace(' campus', ''); return text.indexOf(n) >= 0 || text.indexOf(' ' + c.id + ' ') >= 0; })[0];
-  if (named && (!campus || named.id !== campus.id)) { campus = named; bot('Showing answers for ' + named.name + '.'); }
-  var scored = relevant().map(function (f) {
-    var s = 0;
-    (f.keywords || []).forEach(function (k) { k = String(k).toLowerCase(); if (text.indexOf(' ' + k + ' ') >= 0 || (k.length > 4 && text.indexOf(k) >= 0)) s += k.split(' ').length + 1; });
-    words(f.q).forEach(function (w) { if (w.length > 3 && text.indexOf(' ' + w + ' ') >= 0) s += 0.5; });
-    return { f: f, s: s };
-  }).filter(function (x) { return x.s >= 1; }).sort(function (a, b) { return b.s - a.s; });
-  if (!scored.length) { bot('Sorry, I don’t have an answer for that yet. Please choose a topic, or message the campus directly.', back(), helpLinks()); return; }
-  if (scored.length === 1 || scored[0].s >= scored[1].s + 2) return answer(scored[0].f);
-  bot('Did you mean:', scored.slice(0, 3).map(function (x) { return { label: x.f.q, cls: 'skc-q', go: function () { answer(x.f); } }; }).concat([{ label: '☰ Main menu', go: menu, cls: 'skc-quiet' }]));
-}
 
 /* ---------- reference tables ---------- */
 TOPICS.forEach(function (t) {
@@ -358,7 +903,9 @@ FAQ.forEach(function (f) {
 });
 
 renderSite();
-toggle(true);   /* demo: open with the greeting so it is visible straight away (the live sites start closed) */
+/* demo: the real chatbot opens with its greeting straight away (the live sites start closed with the waving button) */
+window.addEventListener('load', function () { if (window.SKANS_CHAT) window.SKANS_CHAT.restart(null); });
 </script>
+
 </body>
 </html>
