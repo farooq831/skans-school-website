@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKANS chatbot test page</title>
+<style>body { font-family: system-ui, Arial, sans-serif; margin: 40px; color: #1F2A3D; background: #fff; } code { background: #f2f2f2; padding: 2px 5px; }</style>
+</head>
+<body>
+<h1>SKANS chatbot: test page</h1>
+<p>Click <strong>Help</strong> at the bottom left. On this page no campus is chosen, like on the main site.</p>
+<p>To test a campus site, add <code>?campus=golra</code> to the address: the script below passes it on.</p>
+<script>
+  // Test only: ?campus=<id> acts like a campus website.
+  var c = new URLSearchParams(location.search).get('campus');
+  var s = document.createElement('script');
+  s.src = 'chatbot.js?v=1'; s.defer = true;
+  if (c) s.setAttribute('data-campus', c);
+  document.body.appendChild(s);
+</script>
+</body>
+</html>

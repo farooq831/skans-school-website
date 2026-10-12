@@ -1,0 +1,59 @@
+/* SKANS chatbot - navy #192A4A, gold #BD852C. All classes start with skc- so they never clash with a website. */
+.skc-launch, .skc-box, .skc-box * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+.skc-launch {
+  position: fixed; bottom: 20px; z-index: 2147483000; display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 18px 12px 14px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #192A4A; color: #fff; font-size: 15px; font-weight: 600; line-height: 1;
+  box-shadow: 0 8px 24px rgba(25, 42, 74, .35); transition: transform .15s ease, box-shadow .15s ease;
+}
+.skc-launch:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(25, 42, 74, .45); }
+.skc-launch:focus-visible, .skc-box button:focus-visible, .skc-box a:focus-visible, .skc-box input:focus-visible { outline: 3px solid #BD852C; outline-offset: 2px; }
+.skc-launch svg { width: 20px; height: 20px; fill: #BD852C; }
+.skc-launch.skc-hidden { display: none; }
+.skc-left { left: 20px; } .skc-right { right: 20px; }
+
+.skc-box {
+  position: fixed; bottom: 20px; z-index: 2147483001; width: 370px; max-width: calc(100vw - 24px);
+  height: 560px; max-height: calc(100vh - 40px); display: flex; flex-direction: column;
+  background: #fff; color: #1F2A3D; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 18px 50px rgba(25, 42, 74, .35); border-top: 4px solid #BD852C;
+}
+.skc-box[hidden] { display: none; }
+.skc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px; background: #192A4A; color: #fff; }
+.skc-title strong { display: block; font-family: "Times New Roman", Times, serif; font-size: 19px; letter-spacing: .3px; }
+.skc-sub { display: block; font-size: 12px; color: #D9DEE8; margin-top: 2px; }
+.skc-close { border: 0; background: transparent; color: #fff; font-size: 26px; line-height: 1; cursor: pointer; padding: 2px 8px; border-radius: 8px; }
+.skc-close:hover { background: rgba(255, 255, 255, .12); }
+
+.skc-log { flex: 1; overflow-y: auto; padding: 14px; background: #F7F4EE; scroll-behavior: smooth; }
+.skc-msg { max-width: 88%; margin: 0 0 10px; padding: 10px 13px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
+.skc-bot { background: #fff; border: 1px solid #E7E1D6; border-top-left-radius: 4px; }
+.skc-user { margin-left: auto; background: #192A4A; color: #fff; border-top-right-radius: 4px; }
+.skc-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: -2px 0 12px; }
+.skc-btn, .skc-link {
+  display: inline-block; padding: 8px 12px; border-radius: 999px; font-size: 13px; line-height: 1.3; text-align: left;
+  cursor: pointer; text-decoration: none; transition: background .15s ease, color .15s ease;
+}
+.skc-btn { border: 1px solid #192A4A; background: #fff; color: #192A4A; }
+.skc-btn:hover { background: #192A4A; color: #fff; }
+.skc-btn.skc-quiet { border-color: #CFC6B6; color: #5A6478; }
+.skc-btn.skc-quiet:hover { background: #EDE7DC; color: #192A4A; }
+.skc-btn.skc-q, .skc-btn.skc-campus { width: 100%; border-radius: 10px; }
+.skc-link { border: 1px solid #BD852C; background: #fff; color: #7A5212; font-weight: 600; }
+.skc-link:hover { background: #BD852C; color: #fff; }
+.skc-link.skc-main { background: #BD852C; color: #fff; }
+.skc-link.skc-main:hover { background: #A2701F; }
+.skc-link.skc-wa { border-color: #1DA851; color: #157A3B; }
+.skc-link.skc-wa:hover { background: #1DA851; color: #fff; }
+
+.skc-form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #E7E1D6; background: #fff; }
+.skc-form input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #CFC6B6; border-radius: 10px; font-size: 14px; color: #1F2A3D; }
+.skc-send { border: 0; border-radius: 10px; padding: 0 16px; background: #192A4A; color: #fff; font-weight: 600; cursor: pointer; }
+.skc-send:hover { background: #24395F; }
+
+@media (max-width: 480px) {
+  .skc-box { left: 8px !important; right: 8px !important; bottom: 8px; width: auto; max-width: none; height: calc(100vh - 16px); max-height: none; border-radius: 14px; }
+  .skc-launch { bottom: 14px; padding: 11px 15px 11px 12px; font-size: 14px; }
+  .skc-left { left: 14px; } .skc-right { right: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .skc-launch, .skc-log { transition: none; scroll-behavior: auto; } }
