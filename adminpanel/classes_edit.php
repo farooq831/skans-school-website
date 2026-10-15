@@ -128,6 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </table>
         </div>
         <button type="button" class="btn btn-outline-primary btn-sm mb-3" id="cls-add"><i class="fas fa-plus"></i> Add a class</button>
+        <div class="alert alert-info py-2 mb-3" id="cls-cards" aria-live="polite"></div>
         <p class="adm-help mb-3">Removing a class only hides it on the website; its fees stay saved. Class names must match the Fee structure (the fee table follows this list automatically).</p>
         <div class="adm-sticky d-flex flex-wrap align-items-center" style="gap:.5rem">
             <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-floppy-disk"></i> Save classes</button>
@@ -148,6 +149,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (body.rows.length === 1) { alert('Please keep at least one class.'); return; }
         b.closest('tr').remove(); renumber();
     });
+    // Which level cards the website will show: a card with no class is hidden.
+    var names = <?= json_encode(array_values($level_names), JSON_UNESCAPED_UNICODE) ?>;
+    function cards() {
+        var used = {};
+        [].forEach.call(body.querySelectorAll('tr'), function (tr) {
+            if (tr.querySelector('input').value.trim() !== '') used[tr.querySelector('select').value] = true;
+        });
+        var shown = [], hidden = [];
+        names.slice(0, Math.max(3, Object.keys(used).reduce(function (m, k) { return Math.max(m, +k + 1); }, 0))).forEach(function (n, i) {
+            (used[i] ? shown : hidden).push(n);
+        });
+        var box = document.getElementById('cls-cards');
+        box.innerHTML = '';
+        var a = document.createElement('div'); a.innerHTML = '<i class="fas fa-eye"></i> <strong>Cards shown on the website:</strong> ';
+        a.appendChild(document.createTextNode(shown.join(' · ') || 'none'));
+        box.appendChild(a);
+        if (hidden.length) {
+            var b = document.createElement('div'); b.innerHTML = '<i class="fas fa-eye-slash"></i> <strong>Hidden (no class chosen for them):</strong> ';
+            b.appendChild(document.createTextNode(hidden.join(' · ')));
+            box.appendChild(b);
+        }
+        box.className = 'alert py-2 mb-3 ' + (hidden.length && shown.length < 2 ? 'alert-warning' : 'alert-info');
+    }
+    body.addEventListener('change', cards); body.addEventListener('input', cards); body.addEventListener('click', function () { setTimeout(cards, 0); });
+    cards();
     document.getElementById('cls-add').addEventListener('click', function () {
         var last = body.rows[body.rows.length - 1];
         var tr = last.cloneNode(true);
