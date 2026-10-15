@@ -10,7 +10,7 @@
             <h2>Academic Programs</h2>
             <span class="sk-rule"></span>
         </div>
-        <div class="sk-levels">
+        <div class="sk-levels" style="--cards: <?= max(1, min(3, count($site['levels']))) ?>">
 <?php foreach ($site['levels'] as $level): ?>
             <article class="sk-card sk-level" id="<?= e($level['id']) ?>">
 <?php if ($level['image'] !== '' && is_file(SK_ROOT . '/' . $level['image'])): ?>

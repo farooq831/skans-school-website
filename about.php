@@ -15,7 +15,7 @@ require __DIR__ . '/includes/header.php';
             <img src="<?= e($principal['photo_src']) ?>" width="649" height="866" alt="<?= e($principal['photo_alt']) ?>" style="object-position: center <?= e($principal['photo_pos']) ?>">
         </figure>
         <div>
-            <span class="sk-eyebrow">A message from the Principal</span>
+            <span class="sk-eyebrow">A message from the <?= e($principal['title'] !== '' ? $principal['title'] : 'Principal') ?></span>
             <h2><?= e($principal['heading']) ?></h2>
             <span class="sk-rule"></span>
 <?php foreach ($principal['paragraphs'] as $para): ?>

@@ -33,8 +33,7 @@ window.SKANS_CHAT_CAMPUSES = [
     "pages": { "fees": "admissions.php", "policy": "admissions.php" } },
 
   { "id": "westridgejr", "name": "Westridge Junior Campus", "url": "https://westridgejuniorcampus.skansschool.edu.pk/",
-    "classes": "",                     "phone": "+92 51 8773091",  "tel": "+92518773091",  "whatsapp": "923005070778",
-    "pages": { "fees": "admissions.php", "policy": "admissions.php" } },
+    "classes": "Grade 1 – Grade 2",    "phone": "+92 51 8773091",  "tel": "+92518773091",  "whatsapp": "923005070778" },
 
   { "id": "westridgeeye", "name": "Westridge EYE Campus", "url": "https://westridgeeyecampus.skansschool.edu.pk/",
     "classes": "Playgroup – Kindergarten", "phone": "+92 51 8890534", "tel": "+92518890534", "whatsapp": "923140512814" }
