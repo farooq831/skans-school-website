@@ -29,8 +29,7 @@ window.SKANS_CHAT_CAMPUSES = [
     "classes": "Class 6 – A Level",    "phone": "+92 51 2229454",  "tel": "+92512229454",  "whatsapp": "923467845010" },
 
   { "id": "westridgesr", "name": "Westridge Senior Campus", "url": "https://westridgeseniorcampus.skansschool.edu.pk/",
-    "classes": "Class 3 – Matric / O Level", "phone": "+92 51 8355546", "tel": "+92518355546", "whatsapp": "923345359458",
-    "pages": { "fees": "admissions.php", "policy": "admissions.php" } },
+    "classes": "Class 3 – O Level", "phone": "+92 51 8355546", "tel": "+92518355546", "whatsapp": "923345359458" },
 
   { "id": "westridgejr", "name": "Westridge Junior Campus", "url": "https://westridgejuniorcampus.skansschool.edu.pk/",
     "classes": "Grade 1 – Grade 2",    "phone": "+92 51 8773091",  "tel": "+92518773091",  "whatsapp": "923005070778" },
