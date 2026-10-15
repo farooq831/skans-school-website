@@ -37,6 +37,5 @@ window.SKANS_CHAT_CAMPUSES = [
     "pages": { "fees": "admissions.php", "policy": "admissions.php" } },
 
   { "id": "westridgeeye", "name": "Westridge EYE Campus", "url": "https://westridgeeyecampus.skansschool.edu.pk/",
-    "classes": "",                     "phone": "",                "tel": "",              "whatsapp": "",
-    "pages": { "fees": "admissions.php", "policy": "admissions.php" } }
+    "classes": "Playgroup – Kindergarten", "phone": "+92 51 8890534", "tel": "+92518890534", "whatsapp": "923140512814" }
 ];

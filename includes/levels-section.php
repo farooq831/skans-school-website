@@ -20,7 +20,9 @@
 <?php endif; ?>
                 <div class="sk-card__body">
                     <h3 class="sk-card__title"><?= e($level['name']) ?></h3>
+<?php if (campus_feature('level_range') && trim((string) $level['range']) !== ''): // 'level_range' => false hides it ?>
                     <p class="sk-level__range"><?= e($level['range']) ?></p>
+<?php endif; ?>
 <?php if (campus_feature('level_classes')): // config 'features' => ['level_classes' => false] hides it ?>
                     <ul class="sk-level__classes" aria-label="Classes">
 <?php foreach ($level['classes'] as [$class, $age]): ?>

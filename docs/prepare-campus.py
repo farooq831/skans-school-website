@@ -42,9 +42,17 @@ def find_site_root(folder: Path) -> Path:
     """The folder that holds the old index.php (backups often have one extra folder level)."""
     hits = sorted(folder.rglob('index.php'), key=lambda p: len(p.parts))
     for p in hits:
-        if (p.parent / 'adminpanel').is_dir():
+        if (p.parent / 'adminpanel').is_dir() or (p.parent / 'cpenal').is_dir():
             return p.parent
     sys.exit('Could not find the old website (index.php + adminpanel) inside the backup.')
+
+
+def old_admin(old: Path) -> Path:
+    """The old site's admin folder: adminpanel (most campuses) or cpenal (Westridge EYE)."""
+    for name in ('adminpanel', 'cpenal'):
+        if (old / name).is_dir():
+            return old / name
+    return old / 'adminpanel'
 
 
 def copy_new_code(dest: Path):
@@ -188,7 +196,7 @@ def pick_pictures(old: Path, site: Path):
 
 def copy_uploads(old: Path, site: Path):
     log(''); log('UPLOADED PICTURES (stay the same as on the old site)')
-    up = old / 'adminpanel' / 'upload'
+    up = old_admin(old) / 'upload'
     if up.is_dir():
         shutil.copytree(up, site / 'adminpanel' / 'upload', dirs_exist_ok=True)
         n = sum(1 for p in (site / 'adminpanel' / 'upload').rglob('*') if p.is_file())
@@ -209,7 +217,7 @@ def php_string(v: str) -> str:
 
 
 def read_db_login(old: Path):
-    for cand in [old / 'adminpanel' / 'db.php', old / 'db.php']:
+    for cand in [old_admin(old) / 'db.php', old / 'db.php']:
         if cand.is_file():
             t = cand.read_text(encoding='utf8', errors='replace')
             vals = {}
@@ -313,6 +321,7 @@ def write_config(old: Path, site: Path, campus: str, domain: str, name: str, cit
             "        'level_classes'           => false,   // class + age list on the 3 level cards",
             "        'level_board'             => false,   // \"Examination board: FBISE\" on the Seniors card",
             "        'academic_programs_admin' => false,   // Academic Programs in the admin menu and dashboard",
+            "        // 'level_range'          => false,   // the line under each card title",
             "    ],", "    'site' => ["]
     for k in ('name', 'campus', 'full_name', 'city', 'classes', 'tagline', 'address', 'map_url', 'email'):
         cfg.append(f"        {php_string(k)} => {php_string(site_vals[k])},")

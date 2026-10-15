@@ -105,6 +105,7 @@ function campus_config(): array
  *   'features' => ['level_classes' => false, 'level_board' => false, 'academic_programs_admin' => false],
  *   level_classes            class + age list on the 3 level cards
  *   level_board              "Examination board: FBISE" line on the Seniors card
+ *   level_range              the line under each card title (e.g. "Class 1 to Class 2")
  *   academic_programs_admin  Academic Programs in the admin menu and dashboard
  */
 function campus_feature(string $name): bool

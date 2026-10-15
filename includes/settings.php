@@ -248,7 +248,7 @@ function load_levels(array $levels): array
             $parts = explode(',', $desc);
         }
         $points = array_values(array_filter(array_map(function ($line) {
-            return trim($line, " \t,.");
+            return trim(preg_replace('/^[\s*•\-–]+/u', '', $line), " \t,.");
         }, $parts), 'strlen'));
         if ($points) {
             $levels[$i]['objectives'] = $points;
