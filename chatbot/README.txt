@@ -1,10 +1,10 @@
-SKANS CHATBOT (buttons + links + fixed answers, no AI)   - version 2 (October 2026)
+SKANS CHATBOT (buttons + links + fixed answers, no AI)   - version 3 (October 2026)
 ====================================================================================
 Files (upload all to  public_html/chatbot/  on the main-site cPanel):
   chatbot.js     the chat window (do not edit)
   chatbot.css    its design (navy + gold, waving SKANS button)
   campuses.js    the 9 campuses: name, web address, classes line, phone, WhatsApp   <- you edit
-  faq.js         the common questions and answers                                    <- you edit
+  faq.js         questions, answers, keywords and small talk                         <- you edit
   demo.html      test page (optional)
 The mentor demo (chatbot-demo-for-mentor.html) is NOT needed on the server.
 
@@ -24,7 +24,20 @@ ADD TO A CAMPUS WEBSITE (new design: AECHS, PWD, Chakri, Harley, Golra Jr, Golra
 
 CHANGE QUESTIONS OR NUMBERS
   Edit faq.js or campuses.js in File Manager > Save. Keep the "quotes" and commas.
-  Browsers may keep the old file for a few hours: to force it, change ?v=2 to ?v=3 in the <script> lines.
+  Visitors get the edited faq.js / campuses.js within an hour (no need to touch the <script> lines).
+  After uploading a new chatbot.js or chatbot.css: test with Ctrl+F5.
+
+HOW THE QUESTIONS WORK (version 3)
+  "show": true      the question is listed under the "Common questions" button (keep about 8).
+  no "show"         the question is NOT listed, but is found when someone types, e.g. "fee structure",
+                    "fees kitni hai", "documents required". Add as many as you like.
+  keywords          what parents may type (English and Roman Urdu). One wrong letter in longer words is OK.
+  only "main"       questions comparing campuses: main site only.
+  only "campus"     questions for a campus website; "per" gives each campus its own answer.
+  {campus} {classes} {phone} in an answer are filled in from campuses.js.
+  SMALL TALK (bottom of faq.js): hello, how are you, who are you, thanks, bye (also Roman Urdu).
+  On a campus website the chat only talks about that campus. If someone types another campus,
+  it gives a link to that campus's own website (no details). The main site can still switch campus.
   Mistake = chat button disappears (never a broken page): undo your last edit.
 
 POSITION AND BEHAVIOUR

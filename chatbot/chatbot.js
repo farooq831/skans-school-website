@@ -6,7 +6,7 @@
  *   data-position="right"    put the button on the right (default: left, so it never covers WhatsApp)
  *   data-container="#id"     show the chat inside an element instead of the page corner (demo pages)
  *   data-open="true"         open the chat as soon as the page loads (demo pages)
- * Data: campuses.js and faq.js in the same folder. Edit those, not this file.
+ * Data: campuses.js and faq.js in the same folder. Edit those, not this file. (version 3, October 2026)
  */
 (function () {
   'use strict';
@@ -43,7 +43,8 @@
   /* ---------- load style + data (skipped when the page already has them, e.g. a one-file demo) ---------- */
   function load(file, done) {
     var s = document.createElement('script');
-    s.src = base + file + (ver ? '?' + ver : ''); s.async = true;
+    // the hour number makes browsers pick up edits to campuses.js / faq.js within an hour
+    s.src = base + file + '?' + (ver ? ver + '&' : '') + 'h=' + Math.floor(Date.now() / 36e5); s.async = true;
     s.onload = done; s.onerror = done;
     document.head.appendChild(s);
   }
@@ -70,6 +71,13 @@
   }
   function host(u) { try { return new URL(u, location.href).hostname.replace(/^www\./, '').toLowerCase(); } catch (e) { return ''; } }
   function topic(key) { for (var i = 0; i < TOPICS.length; i++) if (TOPICS[i].key === key) return TOPICS[i]; return null; }
+  /* answer text for the current campus: "per" answers first, then {campus} {classes} {phone} filled in */
+  function says(f) {
+    var a = (f.per && campus && (f.per[campus.id] || f.per['*'])) || f.a;
+    return String(a).replace(/\{campus\}/g, campus ? campus.name : 'SKANS School System')
+      .replace(/\{classes\}/g, (campus && campus.classes) || 'the classes shown on the Programs page')
+      .replace(/\{phone\}/g, (campus && campus.phone) || 'the campus office');
+  }
   function pageUrl(c, key) {
     var t = topic(key); if (!c || !t) return '';
     return c.url.replace(/\/?$/, '/') + ((c.pages && c.pages[key]) || t.page);
@@ -82,7 +90,7 @@
 
   function start() {
     campuses = window.SKANS_CHAT_CAMPUSES || [];
-    faq = window.SKANS_CHAT_FAQ || [];
+    faq = (window.SKANS_CHAT_FAQ || []).concat((window.SKANS_CHAT_SMALLTALK || []).map(function (f) { f.small = true; return f; }));
     if (!campuses.length || !document.body) return;          // data missing: show nothing rather than a broken bot
     var here = host(location.href);
     campus = find(forced) || campuses.filter(function (c) { return host(c.url) === here; })[0] || null;
@@ -229,7 +237,7 @@
   /* ---------- flows ---------- */
   function welcome() {
     if (campus) {
-      bot('Assalam o Alaikum! 👋 Welcome to SKANS ' + campus.name + '. How can we help you today?');
+      bot('Assalam o Alaikum! 👋 Welcome to SKANS ' + campus.name + '. Pick a topic, or type your question below.');
       menu();
     } else {
       bot('Assalam o Alaikum! 👋 Welcome to SKANS School System. Which campus are you interested in?');
@@ -249,7 +257,8 @@
     var b = MENU.map(function (k) { var t = topic(k); return { label: t.label, icon: t.icon, go: function () { openTopic(k); } }; });
     b.push({ label: 'Common questions', icon: '❓', go: questions });
     bot(quiet === true ? 'Pick a topic:' : 'Choose a topic for ' + campus.name + ':', b, null, 'cards');
-    bot('Looking for another campus?', [{ label: 'Change campus', icon: '🔁', go: function () { pickCampus(); }, cls: 'skc-quiet' }]);
+    // on a campus website the chat stays with that campus; the main site can switch
+    if (!onCampusSite) bot('Looking for another campus?', [{ label: 'Change campus', icon: '🔁', go: function () { pickCampus(); }, cls: 'skc-quiet' }]);
   }
   function openTopic(key) {
     if (!campus) return pickCampus();
@@ -258,16 +267,26 @@
     if (key === 'contact') links = links.concat(helpLinks());
     bot(t.label + ' of ' + campus.name + ': tap below to open the page.', backButtons(), links);
   }
+  /* questions for this campus. only "main": questions that compare campuses (main site only);
+     only "campus": questions for one campus website */
   function relevant() {
-    return faq.filter(function (f) { return !f.campus || f.campus === 'all' || (campus && f.campus === campus.id); });
+    return faq.filter(function (f) {
+      if (f.campus && f.campus !== 'all' && !(campus && f.campus === campus.id)) return false;
+      if (f.only === 'main' && onCampusSite) return false;
+      if (f.only === 'campus' && !onCampusSite) return false;
+      return true;
+    });
   }
+  /* the short list on the "Common questions" button: only entries with "show": true */
+  function popular() { return relevant().filter(function (f) { return f.show && !f.small; }); }
   function questions() {
-    bot('Here are the questions parents ask most:', relevant().map(function (f) { return { label: f.q, go: function () { answer(f); } }; })
+    bot('Questions parents ask most. You can also type any question below.', popular().map(function (f) { return { label: f.q, go: function () { answer(f); } }; })
       .concat([{ label: 'Main menu', icon: '☰', go: menu, cls: 'skc-quiet' }]), null, 'list');
   }
   function answer(f) {
+    if (f.small) { bot(says(f), backButtons(), f.help ? helpLinks() : null); return; }
     if (f.topic && !campus) {
-      bot(f.a);
+      bot(says(f));
       bot('Which campus? I will show you the right page.', campuses.map(function (c) {
         return { label: c.name, note: c.classes || '', icon: '🏫', go: function () { campus = c; store('skans_chat_campus', c.id); answer(f); } };
       }), null, 'list');
@@ -276,30 +295,61 @@
     var links = [];
     if (f.topic && campus) { var t = topic(f.topic); if (t) links.push({ label: 'Open ' + t.label, icon: '↗', href: pageUrl(campus, f.topic), cls: 'skc-main' }); }
     if (f.link) links.push({ label: f.linkText || 'Open', icon: '↗', href: f.link, cls: 'skc-main' });
-    bot(f.a, backButtons(), links.concat(helpLinks()));
+    bot(says(f), backButtons(), links.concat(helpLinks()));
   }
 
-  /* ---------- search (keywords) ---------- */
-  function words(s) { return String(s).toLowerCase().replace(/[^a-z0-9\s\-\.\/%]/g, ' ').split(/\s+/).filter(Boolean); }
+  /* ---------- search (keywords, with room for one typing mistake in longer words) ---------- */
+  function words(s) { return String(s).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9\s\-\.\/%]/g, ' ').split(/\s+/).filter(Boolean); }
+  function near(a, b) {                                   // same word with at most one letter wrong, missing or extra
+    if (Math.abs(a.length - b.length) > 1) return false;
+    var i = 0, j = 0, d = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++d > 1) return false;
+      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+    }
+    return d + (a.length - i) + (b.length - j) <= 1;
+  }
+  function score(f, text, list) {
+    var s = 0;
+    (f.keywords || []).forEach(function (k) {
+      k = String(k).toLowerCase();
+      if (text.indexOf(' ' + k + ' ') >= 0 || (k.length > 4 && text.indexOf(k) >= 0)) s += k.split(' ').length + 1;
+      else if (k.length >= 6 && k.indexOf(' ') < 0 && list.some(function (w) { return w.length >= 5 && near(w, k); })) s += 1;
+    });
+    words(f.q).forEach(function (w) { if (w.length > 3 && text.indexOf(' ' + w + ' ') >= 0) s += 0.5; });
+    return s;
+  }
   function search(q) {
-    var text = ' ' + words(q).join(' ') + ' ';
-    // a campus name typed: switch to it
-    var named = campuses.filter(function (c) { var n = c.name.toLowerCase().replace(' campus', ''); return text.indexOf(n) >= 0 || text.indexOf(' ' + c.id + ' ') >= 0; })[0];
-    if (named && (!campus || named.id !== campus.id)) { campus = named; store('skans_chat_campus', named.id); bot('Showing answers for ' + named.name + '.'); }
+    var list = words(q), text = ' ' + list.join(' ') + ' ';
+    // a campus name typed
+    // full names first ("golra senior" before the id "golra"), the longest name wins
+    var named = campuses.filter(function (c) { return text.indexOf(' ' + c.name.toLowerCase().replace(' campus', '') + ' ') >= 0; })
+      .sort(function (a, b) { return b.name.length - a.name.length; })[0]
+      || campuses.filter(function (c) { return text.indexOf(' ' + c.id + ' ') >= 0; })[0];
+    if (named && (!campus || named.id !== campus.id)) {
+      if (onCampusSite) {                                 // campus website: no details of other campuses here
+        bot('This chat is for ' + campus.name + '. For ' + named.name + ', please visit its own website.', backButtons(),
+          [{ label: 'Open ' + named.name + ' website', icon: '↗', href: named.url, cls: 'skc-main' }]);
+        return;
+      }
+      campus = named; store('skans_chat_campus', named.id); bot('Showing answers for ' + named.name + '.');
+    }
 
-    var scored = relevant().map(function (f) {
-      var score = 0;
-      (f.keywords || []).forEach(function (k) { k = String(k).toLowerCase(); if (text.indexOf(' ' + k + ' ') >= 0 || (k.length > 4 && text.indexOf(k) >= 0)) score += k.split(' ').length + 1; });
-      words(f.q).forEach(function (w) { if (w.length > 3 && text.indexOf(' ' + w + ' ') >= 0) score += 0.5; });
-      return { f: f, score: score };
-    }).filter(function (x) { return x.score >= 1; }).sort(function (a, b) { return b.score - a.score; });
+    var scored = relevant().map(function (f) { return { f: f, score: score(f, text, list) }; })
+      .filter(function (x) { return x.score >= 1; }).sort(function (a, b) { return b.score - a.score; });
+    var real = scored.filter(function (x) { return !x.f.small; }), chat = scored.filter(function (x) { return x.f.small; });
 
-    if (!scored.length) {
-      bot('Sorry, I don’t have an answer for that yet. Please choose a topic, or message the campus directly.', backButtons(), helpLinks());
+    if (!real.length && chat.length) return answer(chat[0].f);          // only small talk: "hello", "thanks"
+    if (real.length && chat.length && chat[0].f.pre) bot(chat[0].f.pre);  // "hello, what are the fees?"
+    if (!real.length) {
+      bot('Sorry, I don’t have an answer for that yet. Try one of these, or message the campus directly:',
+        popular().slice(0, 4).map(function (f) { return { label: f.q, go: function () { answer(f); } }; })
+          .concat([{ label: 'Main menu', icon: '☰', go: menu, cls: 'skc-quiet' }]), helpLinks(), 'list');
       return;
     }
-    if (scored.length === 1 || scored[0].score >= scored[1].score + 2) return answer(scored[0].f);
-    bot('Did you mean:', scored.slice(0, 3).map(function (x) { return { label: x.f.q, go: function () { answer(x.f); } }; })
+    if (real.length === 1 || real[0].score >= real[1].score + 2) return answer(real[0].f);
+    bot('Did you mean:', real.slice(0, 3).map(function (x) { return { label: x.f.q, go: function () { answer(x.f); } }; })
       .concat([{ label: 'Main menu', icon: '☰', go: menu, cls: 'skc-quiet' }]), null, 'list');
   }
 
