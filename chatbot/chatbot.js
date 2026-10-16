@@ -301,17 +301,52 @@
 
   /* ---------- real fees: every campus website publishes chat-fees.php (its Fee Structure table) ---------- */
   var feeCache = {};
-  function feesData(c, done) {
-    if (feeCache.hasOwnProperty(c.id)) return done(feeCache[c.id]);
+  function get(url, done) {                               // GET a text file; null when it fails (404, offline, blocked)
     var x = new XMLHttpRequest(), finished = false;
-    function end(d) { if (finished) return; finished = true; feeCache[c.id] = d; done(d); }
+    function end(t) { if (!finished) { finished = true; done(t); } }
     try {
-      x.open('GET', c.url.replace(/\/?$/, '/') + 'chat-fees.php', true);
-      x.timeout = 5000;
-      x.onload = function () { var d = null; try { d = JSON.parse(x.responseText); } catch (e) {} end(d && d.classes && d.classes.length && d.columns ? d : null); };
-      x.onerror = x.ontimeout = function () { end(null); };   // file not uploaded yet / offline: normal answers
+      x.open('GET', url, true); x.timeout = 6000;
+      x.onload = function () { end(x.status >= 200 && x.status < 300 ? x.responseText : null); };
+      x.onerror = x.ontimeout = function () { end(null); };
       x.send();
     } catch (e) { end(null); }
+  }
+  /* the fee table of a campus: 1. its chat-fees.php (if uploaded), 2. else read its Fee Structure page */
+  function feesData(c, done) {
+    if (feeCache.hasOwnProperty(c.id)) return done(feeCache[c.id]);
+    function end(d) { feeCache[c.id] = d; done(d); }
+    get(c.url.replace(/\/?$/, '/') + 'chat-fees.php', function (t) {
+      var d = null; try { d = JSON.parse(t); } catch (e) {}
+      if (d && d.classes && d.classes.length && d.columns) return end(d);
+      get(pageUrl(c, 'fees'), function (html) { end(html ? fromPage(html) : null); });
+    });
+  }
+  /* reads the fee table on the Fee Structure page (the same numbers visitors see there) */
+  function fromPage(html) {
+    try {
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      var table = doc.querySelector('table.sk-table'); if (!table) return null;
+      var keys = { registration: /registration/i, admission: /admission/i, security: /security/i, annual: /annual/i, tuition: /tuition/i, lab: /lab/i };
+      var columns = [], currency = '';
+      Array.prototype.slice.call(table.querySelectorAll('thead th'), 1).forEach(function (th, i) {
+        var small = th.querySelector('small'), period = small ? small.textContent.trim() : '';
+        var label = th.textContent.replace(period, '').trim(), key = 'c' + i;
+        for (var k in keys) if (keys[k].test(label)) { key = k; break; }
+        columns.push({ key: key, label: label, period: period });
+      });
+      var classes = Array.prototype.map.call(table.querySelectorAll('tbody tr'), function (tr) {
+        var name = tr.querySelector('th'), row = { 'class': name ? name.textContent.trim() : '' };
+        Array.prototype.forEach.call(tr.querySelectorAll('td'), function (td, i) {
+          var t = td.textContent.trim(), n = t.replace(/[^0-9]/g, '');
+          if (!currency) { var m = /^([^0-9\s]+\.?)\s*[0-9]/.exec(t); if (m) currency = m[1]; }
+          if (columns[i]) row[columns[i].key] = n ? parseInt(n, 10) : null;
+        });
+        return row;
+      }).filter(function (r) { return r['class']; });
+      var session = '';
+      Array.prototype.forEach.call(doc.querySelectorAll('.sk-eyebrow'), function (e) { var m = /session:\s*(.+)$/i.exec(e.textContent.trim()); if (m) session = m[1]; });
+      return classes.length && columns.length ? { session: session, currency: currency || 'Rs.', columns: columns, classes: classes } : null;
+    } catch (e) { return null; }
   }
   var NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
   function feeQuestion(text) { return /\s(fee|fees|fess|feez|tuition|charges|cost|price|kitni|kharcha|paisay|dues)\s|\show much\s/.test(text); }
@@ -329,8 +364,10 @@
       var hit = rows.filter(function (r) { return short[i][1].test(r['class'].toLowerCase()); })[0];
       if (hit) return hit;
     }
-    var m = text.match(/\s(?:class|grade|cls|jamat)\s(\d{1,2}|[a-z]+)\s/) || text.match(/\s(\d{1,2})(?:st|nd|rd|th)\s/);
-    var n = m ? (NUM[m[1]] || parseInt(m[1], 10)) : NaN;
+    // a class number: "class 5", "class5", "5 class", "5th class", "5th", "class five", "five class"
+    var ways = [/\s(?:class|grade|cls|jamat)\s?(\d{1,2}|[a-z]+)\s/, /\s(\d{1,2}|[a-z]+?)(?:st|nd|rd|th)?\s(?:class|grade|jamat)\s/, /\s(\d{1,2})(?:st|nd|rd|th)\s/];
+    var n = NaN;
+    for (var w = 0; w < ways.length && !n; w++) { var m = ways[w].exec(text); if (m) n = NUM[m[1]] || parseInt(m[1], 10); }
     if (!n) return null;
     return rows.filter(function (r) { var k = /^(?:class|grade)\s*(\d+)/i.exec(r['class']); return k && +k[1] === n; })[0] || null;
   }
