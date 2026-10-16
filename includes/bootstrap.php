@@ -13,7 +13,8 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 error_reporting(E_ALL);
 
-if (session_status() === PHP_SESSION_NONE) {
+// SK_QUIET (data files such as chat-fees.php): no session and no visitor count.
+if (session_status() === PHP_SESSION_NONE && !defined('SK_QUIET')) {
     session_start();
 }
 
@@ -35,7 +36,7 @@ $site['levels'] = load_levels($site['levels']); // level cards: admin Academic P
 $site = apply_class_list($site, $sk_classes, $db_ok && !empty(settings_all($conn)['class_list']));
 
 // Count one visit per IP address per day (same as the old header did, now with a safe query).
-if ($db_ok) {
+if ($db_ok && !defined('SK_QUIET')) {
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
     $today = date('Y-m-d');
     $check = $conn->prepare('SELECT 1 FROM visitors WHERE ip_address = ? AND visit_date = ? LIMIT 1');

@@ -14,6 +14,7 @@
  *   topic     optional: adds a button to that page of the chosen campus:
  *             fees, admissions, policy, programs, special, facilities, faculty, news, about, contact, policies
  *   link      optional: a full web address for a button instead of a topic, with "linkText" for its label
+ *   feeTable  true = after the answer, show the class buttons with the real fees (from the campus's chat-fees.php)
  * Only write facts the school has confirmed. Keep the commas between blocks.
  */
 window.SKANS_CHAT_FAQ = [
@@ -34,7 +35,7 @@ window.SKANS_CHAT_FAQ = [
     "keywords": ["age", "ages", "minimum age", "age limit", "how old", "years old", "age criteria", "playgroup age", "nursery age", "umar", "umer", "kitni umar"],
     "campus": "all", "topic": "admissions" },
 
-  { "q": "What are the fees?", "show": true,
+  { "q": "What are the fees?", "show": true, "feeTable": true,
     "a": "Fees differ by class. The Fee Structure page of {campus} shows the registration, admission, security, annual and monthly tuition fees for every class.",
     "keywords": ["fee", "fees", "fee structure", "fees structure", "fee schedule", "tuition", "tuition fee", "charges", "cost", "price", "how much", "monthly fee", "fess", "feez", "fess structure", "kitni fees", "fees kitni", "fees kya", "kharcha", "paisay"],
     "campus": "all", "topic": "fees" },

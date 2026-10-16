@@ -296,6 +296,61 @@
     if (f.topic && campus) { var t = topic(f.topic); if (t) links.push({ label: 'Open ' + t.label, icon: '↗', href: pageUrl(campus, f.topic), cls: 'skc-main' }); }
     if (f.link) links.push({ label: f.linkText || 'Open', icon: '↗', href: f.link, cls: 'skc-main' });
     bot(says(f), backButtons(), links.concat(helpLinks()));
+    if (f.feeTable && campus) feesData(campus, function (d) { if (d) feeClasses(d); });
+  }
+
+  /* ---------- real fees: every campus website publishes chat-fees.php (its Fee Structure table) ---------- */
+  var feeCache = {};
+  function feesData(c, done) {
+    if (feeCache.hasOwnProperty(c.id)) return done(feeCache[c.id]);
+    var x = new XMLHttpRequest(), finished = false;
+    function end(d) { if (finished) return; finished = true; feeCache[c.id] = d; done(d); }
+    try {
+      x.open('GET', c.url.replace(/\/?$/, '/') + 'chat-fees.php', true);
+      x.timeout = 5000;
+      x.onload = function () { var d = null; try { d = JSON.parse(x.responseText); } catch (e) {} end(d && d.classes && d.classes.length && d.columns ? d : null); };
+      x.onerror = x.ontimeout = function () { end(null); };   // file not uploaded yet / offline: normal answers
+      x.send();
+    } catch (e) { end(null); }
+  }
+  var NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
+  function feeQuestion(text) { return /\s(fee|fees|fess|feez|tuition|charges|cost|price|kitni|kharcha|paisay|dues)\s|\show much\s/.test(text); }
+  /* which row of the fee table the parent means: "Nursery", "pg", "kg", "pre 9", "class 5", "5th", "grade five" */
+  function classIn(text, rows) {
+    var key = function (s) { return ' ' + words(s).join(' ') + ' '; };
+    var full = rows.filter(function (r) { return text.indexOf(key(r['class'])) >= 0; })
+      .sort(function (a, b) { return b['class'].length - a['class'].length; })[0];
+    if (full) return full;
+    var short = [[/\s(pg|play group|playgroup|play)\s/, /play/], [/\s(kg|k\.g|kindergarten|kindergarden|prep)\s/, /kinder|^kg|prep/],
+                 [/\s(nursery|nursry|nursary)\s/, /nurs/], [/\spre[\s-]?9\s|\spre nine\s/, /pre[\s-]?9/],
+                 [/\s(o level|olevel|o-level|igcse)\s/, /o level|igcse/], [/\s(a level|alevel|a-level)\s/, /a level/]];
+    for (var i = 0; i < short.length; i++) {
+      if (!short[i][0].test(text)) continue;
+      var hit = rows.filter(function (r) { return short[i][1].test(r['class'].toLowerCase()); })[0];
+      if (hit) return hit;
+    }
+    var m = text.match(/\s(?:class|grade|cls|jamat)\s(\d{1,2}|[a-z]+)\s/) || text.match(/\s(\d{1,2})(?:st|nd|rd|th)\s/);
+    var n = m ? (NUM[m[1]] || parseInt(m[1], 10)) : NaN;
+    if (!n) return null;
+    return rows.filter(function (r) { var k = /^(?:class|grade)\s*(\d+)/i.exec(r['class']); return k && +k[1] === n; })[0] || null;
+  }
+  function money(cur, n) { return cur + ' ' + n.toLocaleString('en-US'); }
+  function feeReply(row, d) {
+    var cur = d.currency || 'Rs.', lines = [];
+    d.columns.forEach(function (c) {
+      var v = row[c.key];
+      if (typeof v === 'number') lines.push('• ' + c.label + ': ' + money(cur, v) + (c.period ? ' (' + c.period + ')' : ''));
+    });
+    var links = [{ label: 'Open Fee Structure', icon: '↗', href: pageUrl(campus, 'fees'), cls: 'skc-main' }].concat(helpLinks());
+    var more = [{ label: 'Another class', icon: '🔎', go: function () { feeClasses(d); } }].concat(backButtons());
+    if (!lines.length) { bot('The fees for ' + row['class'] + ' are not on the website yet. Please ask the ' + campus.name + ' office.', more, links); return; }
+    var first = ['admission', 'security', 'registration', 'tuition'];   // first payment rule (Fee Structure page)
+    var total = first.every(function (k) { return typeof row[k] === 'number'; }) ? first.reduce(function (s, k) { return s + row[k]; }, 0) : 0;
+    bot('Fees for ' + row['class'] + ' at ' + campus.name + (d.session ? ' (session ' + d.session + ')' : '') + ':\n' + lines.join('\n')
+      + (total ? '\nFirst payment at admission: ' + money(cur, total) + ' (admission + security + registration + one month’s tuition).' : ''), more, links);
+  }
+  function feeClasses(d) {
+    bot('Choose a class to see its fees:', d.classes.map(function (r) { return { label: r['class'], go: function () { feeReply(r, d); } }; }));
   }
 
   /* ---------- search (keywords, with room for one typing mistake in longer words) ---------- */
@@ -336,6 +391,21 @@
       campus = named; store('skans_chat_campus', named.id); bot('Showing answers for ' + named.name + '.');
     }
 
+    if (campus && feeQuestion(text)) {
+      var asked = campus;
+      feesData(campus, function (d) {
+        var row = d && campus === asked ? classIn(text, d.classes) : null;
+        if (row) return feeReply(row, d);
+        // a class was named but no amounts (file not uploaded yet, or class not in the table): the fees answer
+        var fees = relevant().filter(function (f) { return f.feeTable; })[0];
+        if (fees && /\s(class|grade|playgroup|pg|nursery|kg|kindergarten|pre|o level|a level|igcse|\d{1,2}(st|nd|rd|th))\s/.test(text)) answer(fees);
+        else match(text, list);
+      });
+      return;
+    }
+    match(text, list);
+  }
+  function match(text, list) {
     var scored = relevant().map(function (f) { return { f: f, score: score(f, text, list) }; })
       .filter(function (x) { return x.score >= 1; }).sort(function (a, b) { return b.score - a.score; });
     var real = scored.filter(function (x) { return !x.f.small; }), chat = scored.filter(function (x) { return x.f.small; });

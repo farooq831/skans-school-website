@@ -40,6 +40,13 @@ HOW THE QUESTIONS WORK (version 3)
   it gives a link to that campus's own website (no details). The main site can still switch campus.
   Mistake = chat button disappears (never a broken page): undo your last edit.
 
+REAL FEES IN THE CHAT ("Class 5 fee?", "kg ki fees kitni hai", "fees for 5th class")
+  Each campus website has a small file  chat-fees.php  (in public_html of that campus, next to index.php).
+  It gives the chat the same numbers as the campus Fee Structure page (Admin > Settings > Fee structure),
+  so the amounts are always the ones the campus has saved. Nothing to edit in the chatbot.
+  Campus without that file yet: the chat simply shows the Fee Structure link (no error).
+  Test:  https://<campus address>/chat-fees.php  shows a short text starting with {"campus":
+
 POSITION AND BEHAVIOUR
   Bottom-left by default (the campus sites have WhatsApp bottom-right).
   For bottom-right add  data-position="right"  to the <script> line.
