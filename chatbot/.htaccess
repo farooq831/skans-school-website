@@ -1,0 +1,11 @@
+# SKANS chatbot: browsers check for a newer chatbot file on every visit (a quick "not changed" answer when
+# nothing changed), so updates show at once. The host's default keeps .js / .css files for 30 days.
+<IfModule mod_expires.c>
+    ExpiresActive Off
+</IfModule>
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css|html)$">
+        Header set Cache-Control "no-cache"
+        Header unset Expires
+    </FilesMatch>
+</IfModule>

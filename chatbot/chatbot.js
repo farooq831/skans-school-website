@@ -1,6 +1,6 @@
 /* SKANS chatbot: buttons, links and fixed answers (no AI, no server code).
  * Add to any page, before </body>:
- *   <script src="https://skansschool.edu.pk/chatbot/chatbot.js?v=2" defer></script>
+ *   <script src="https://skansschool.edu.pk/chatbot/chatbot.js?v=3" defer></script>
  * Optional attributes on that tag:
  *   data-campus="golra"      force a campus (normally found automatically from the web address)
  *   data-position="right"    put the button on the right (default: left, so it never covers WhatsApp)

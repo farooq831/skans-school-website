@@ -6,18 +6,19 @@ Files (upload all to  public_html/chatbot/  on the main-site cPanel):
   campuses.js    the 9 campuses: name, web address, classes line, phone, WhatsApp   <- you edit
   faq.js         questions, answers, keywords and small talk                         <- you edit
   demo.html      test page (optional)
+  .htaccess      makes browsers pick up chatbot updates at once (hidden file: Settings > Show Hidden Files)
 The mentor demo (chatbot-demo-for-mentor.html) is NOT needed on the server.
 
 INSTALL ON THE MAIN SITE (skansschool.edu.pk)
   1. File Manager > public_html > + Folder "chatbot" > upload chatbot-upload.zip > Extract > delete the zip.
   2. Test: https://skansschool.edu.pk/chatbot/demo.html  (round SKANS button bottom-left; greeting after 2-3 s)
   3. Back up public_html/index.html (Copy > index.html.bak), Edit index.html, and just BEFORE </body> paste:
-       <script src="/chatbot/chatbot.js?v=2" defer></script>
+       <script src="/chatbot/chatbot.js?v=3" defer></script>
   4. Open https://skansschool.edu.pk > Ctrl+F5 > the SKANS button is at the bottom-left.
 
 ADD TO A CAMPUS WEBSITE (new design: AECHS, PWD, Chakri, Harley, Golra Jr, Golra Sr)
   Edit  includes/footer.php  (backup first) and just BEFORE </body> paste:
-       <script src="https://skansschool.edu.pk/chatbot/chatbot.js?v=2" defer></script>
+       <script src="https://skansschool.edu.pk/chatbot/chatbot.js?v=3" defer></script>
   The campus is recognised from the web address automatically (campuses.js "url").
   New update zips already contain this line (includes/footer.php), so it is kept after updates.
   Old-design campuses (Westridge): paste the same line before </body> in their footer file.
